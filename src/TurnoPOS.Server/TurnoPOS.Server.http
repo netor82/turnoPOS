@@ -1,6 +1,27 @@
 @TurnoPOS.Server_HostAddress = http://localhost:5248
 
+POST {{TurnoPOS.Server_HostAddress}}/Department
+Content-Type: application/json
+{
+  "name": "Bebidas"
+}
+###
+
+POST {{TurnoPOS.Server_HostAddress}}/Department
+Content-Type: application/json
+{
+  "name": "Comidas"
+}
+###
+
+GET {{TurnoPOS.Server_HostAddress}}/Department
+Accept: application/json
+
+###
+
+
 GET {{TurnoPOS.Server_HostAddress}}/Inventory?isActive=false
 Accept: application/json
 
 ###
+

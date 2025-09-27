@@ -51,7 +51,7 @@ public class GenericRepository(TurnoDbContext context) : IGenericRepository
         return query;
     }
 
-    public ValueTask<TEntity?> GetById<TEntity>(int id) where TEntity : BaseEntity
+    public ValueTask<TEntity?> GetById<TEntity>(long id) where TEntity : BaseEntity
         => context.Set<TEntity>().FindAsync(id);
 
     public TEntity Insert<TEntity>(TEntity entity) where TEntity : BaseEntity
@@ -60,7 +60,7 @@ public class GenericRepository(TurnoDbContext context) : IGenericRepository
         return entity;
     }
 
-    public void Delete<TEntity>(int id) where TEntity : BaseEntity
+    public void Delete<TEntity>(long id) where TEntity : BaseEntity
     {
         var entityToDelete = context.Set<TEntity>().Find(id)!;
         Delete(entityToDelete);

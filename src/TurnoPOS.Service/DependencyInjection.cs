@@ -12,7 +12,9 @@ public static class DependencyInjection
     {
         services.ConfigureDataServices(configuration);
 
+        services.AddScoped<IDepartmentService, DepartmentService>();
         services.AddScoped<IInventoryService, InventoryService>();
+        services.AddScoped<IOrderService, OrderService>();
 
         return services;
     }

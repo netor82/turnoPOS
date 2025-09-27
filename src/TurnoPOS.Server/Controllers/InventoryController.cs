@@ -25,18 +25,18 @@ namespace TurnoPOS.Server.Controllers
         }
 
         [HttpPost]
-        public ActionResult<Item> Create([FromBody] Item item)
+        public async Task<ActionResult<Item>> Create([FromBody] Item item)
         {
-            var created = inventoryService.Create(item);
+            var created = await inventoryService.Create(item);
             return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
         }
 
         [HttpPut]
-        public IActionResult Update([FromBody] Item item)
+        public async Task<IActionResult> UpdateAsync([FromBody] Item item)
         {
             if (item.Id == 0)
                 return BadRequest();
-            inventoryService.Update(item);
+            await inventoryService.Update(item);
             return NoContent();
         }
 

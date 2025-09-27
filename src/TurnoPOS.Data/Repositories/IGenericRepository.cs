@@ -15,9 +15,9 @@ public interface IGenericRepository : IDisposable
     IQueryable<TEntity> Get<TEntity>(
         Expression<Func<TEntity, bool>>? filter = null,
         params string[] includeProperties) where TEntity : BaseEntity;
-    ValueTask<TEntity?> GetById<TEntity>(int id) where TEntity : BaseEntity;
+    ValueTask<TEntity?> GetById<TEntity>(long id) where TEntity : BaseEntity;
     TEntity Insert<TEntity>(TEntity entity) where TEntity : BaseEntity;
-    void Delete<TEntity>(int id) where TEntity : BaseEntity;
+    void Delete<TEntity>(long id) where TEntity : BaseEntity;
     void Delete<TEntity>(TEntity entityToDelete) where TEntity : BaseEntity;
     void Update<TEntity>(TEntity entityToUpdate) where TEntity : BaseEntity;
     Task<int> SaveAsync();

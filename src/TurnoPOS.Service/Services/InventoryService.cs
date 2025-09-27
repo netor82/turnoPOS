@@ -18,13 +18,17 @@ public class InventoryService(IGenericRepository genericRepository) : IInventory
         return await genericRepository.GetById<Item>(id)
             ?? throw new KeyNotFoundException($"Item with id {id} not found.");
     }
-    public Item Create(Item item)
+    public async Task<Item> Create(Item item)
     {
-        return genericRepository.Insert(item);
+        var result = genericRepository.Insert(item);
+
+        await genericRepository.SaveAsync();
+        return result;
     }
-    public void Update(Item item)
+    public async Task Update(Item item)
     {
         genericRepository.Update(item);
+        await genericRepository.SaveAsync();
     }
     public async Task<Item> PatchActive(int id, bool isActive)
     {

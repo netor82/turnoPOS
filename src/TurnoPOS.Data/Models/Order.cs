@@ -13,6 +13,6 @@ public class Order : BaseEntity
 
 public enum OrderStatus
 {
-    Completed,
-    Cancelled
+    Completed = 1,
+    Cancelled = 2
 }
