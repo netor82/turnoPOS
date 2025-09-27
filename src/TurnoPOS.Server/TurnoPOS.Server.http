@@ -1,0 +1,6 @@
+@TurnoPOS.Server_HostAddress = http://localhost:5248
+
+GET {{TurnoPOS.Server_HostAddress}}/Inventory?isActive=false
+Accept: application/json
+
+###
