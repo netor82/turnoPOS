@@ -4,8 +4,15 @@ import type Item from '../models/Item';
 const API_BASE_URL = '/inventory';
 
 class InventoryService {
-    static async getAll(parentId: number | null, includeAll: boolean = false): Promise<Item[]> {
-        const response = await axios.get<Item[]>(`${API_BASE_URL}?parentId=${parentId || ''}&includeAll=${includeAll}`);
+    /**
+     * 
+     * @param parentId: if 0 it will bring root items, if null it will bring all the items, else filtered by parentId
+     * @param includeInactive: include both active and inactive
+     * @returns
+     */
+    static async getAll(parentId: number | null, includeInactive: boolean = false): Promise<Item[]> {
+        const resultingParentId = parentId == null ? '' : parentId.toString();
+        const response = await axios.get<Item[]>(`${API_BASE_URL}?parentId=${resultingParentId}&includeAll=${includeInactive}`);
         return response.data;
     }
 

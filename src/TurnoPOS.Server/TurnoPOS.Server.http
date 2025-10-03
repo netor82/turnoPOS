@@ -20,7 +20,17 @@ Accept: application/json
 ###
 
 
-GET {{TurnoPOS.Server_HostAddress}}/Inventory?isActive=false
+GET {{TurnoPOS.Server_HostAddress}}/Inventory?parentId=&isActive=false
+Accept: application/json
+
+###
+
+GET {{TurnoPOS.Server_HostAddress}}/Inventory?parentId=0&isActive=true
+Accept: application/json
+
+###
+
+GET {{TurnoPOS.Server_HostAddress}}/Inventory?parentId=1&isActive=true
 Accept: application/json
 
 ###

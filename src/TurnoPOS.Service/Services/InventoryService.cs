@@ -1,19 +1,26 @@
 ﻿using TurnoPOS.Data.Models;
 using TurnoPOS.Data.Repositories;
 using TurnoPOS.Service.Interfaces;
+using TurnoPOS.Service.Model;
 
 namespace TurnoPOS.Service.Services;
 
 public class InventoryService(IGenericRepository repository) : IInventoryService
 {
-    public async Task<IEnumerable<Item>> GetAll(int? parentId, bool includeAll = false)
+    public async Task<IEnumerable<ItemDTO>> GetAll(int? parentId, bool includeAll = false)
     {
         var query = repository.Get<Item>(
             i => 
-                i.ParentId == parentId
+                (
+                    !parentId.HasValue
+                    ||
+                    (parentId == 0 && i.ParentId == null)
+                    ||
+                    (i.ParentId == parentId)
+                )
                 && (includeAll || i.IsActive),
             i => i.OrderBy(x => x.IsDirectory));
-        return await repository.ToListAsync(query);
+        return (await repository.ToListAsync(query)).Select(ItemDTO.FromEntity);
     }
     public async Task<Item> GetById(int id)
     {

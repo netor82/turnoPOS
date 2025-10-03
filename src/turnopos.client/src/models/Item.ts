@@ -1,5 +1,3 @@
-import type Department from "./Department";
-
 export default interface Item {
     id: number;
     isDirectory: boolean;
@@ -12,7 +10,6 @@ export default interface Item {
     order?: number;
     isActive: boolean;
     parent?: Item | null;
-    department?: Department | null;
     children?: Item[];
     childrenLoaded: boolean;
 }
