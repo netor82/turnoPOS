@@ -5,7 +5,7 @@ using TurnoPOS.Data.Models;
 namespace TurnoPOS.Server.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class OrderController(IOrderService orderService) : ControllerBase
     {
         // Create a new order

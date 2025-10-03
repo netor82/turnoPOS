@@ -1,7 +1,7 @@
 import axios from 'axios';
 import type Department from '../models/Department';
 
-const API_BASE_URL = '/department';
+const API_BASE_URL = '/api/department';
 
 class DepartmentService {
     static async getAll(): Promise<Department[]> {

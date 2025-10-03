@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace TurnoPOS.Service.Model;
+﻿namespace TurnoPOS.Service.Model;
 
 public class ItemDTO
 {
+    public long Id { get; set; }
     public bool IsDirectory { get; set; } = false;
     public long? ParentId { get; set; }
     public long? DepartmentId { get; set; }
@@ -22,6 +17,7 @@ public class ItemDTO
     {
         return new ItemDTO
         {
+            Id = item.Id,
             IsDirectory = item.IsDirectory,
             ParentId = item.ParentId,
             DepartmentId = item.DepartmentId,

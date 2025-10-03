@@ -22,13 +22,16 @@ const EditItem: React.FC<EntityProps<Item>> = ({ entity, onSave, onCancel }) => 
             fetchItems();
     }, []);
 
-    const fetchItems = async () => {
+    const fetchItems = () => {
         setLoading(true);
-        const data = await inventoryService.getAll(item.id, true);
-        const newItem: Item = { ...item, childrenLoaded: true, children: data };
-        setItem(newItem);
-
-        setLoading(false);
+        inventoryService.getAll(item.id, true)
+            .then(data => {
+                console.log('Item Edit - fetchItems: children loaded for ', item.id);
+                const newItem: Item = { ...item, childrenLoaded: true, children: data };
+                setItem(newItem);
+            })
+            .catch(e => console.error(e))
+            .finally(() => setLoading(false));
     };
 
     const handleSave = async () => {
@@ -175,8 +178,8 @@ const EditItem: React.FC<EntityProps<Item>> = ({ entity, onSave, onCancel }) => 
 
         return (
             <div className="item-children">
-                {item.children && item.children.map(item => (
-                    <EditItem key={item.id} entity={item} />
+                {item.children && item.children.map(x => (
+                    <EditItem key={x.id} entity={x} />
                 ))}
             </div>
         );

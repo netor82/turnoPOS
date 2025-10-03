@@ -5,7 +5,7 @@ using TurnoPOS.Service.Interfaces;
 namespace TurnoPOS.Server.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class DepartmentController(IDepartmentService departmentService, ILogger<DepartmentController> logger) : ControllerBase
     {
         [HttpGet]

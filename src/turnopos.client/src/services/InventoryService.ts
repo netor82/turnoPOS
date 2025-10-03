@@ -1,7 +1,7 @@
 import axios from 'axios';
 import type Item from '../models/Item';
 
-const API_BASE_URL = '/inventory';
+const API_BASE_URL = '/api/inventory';
 
 class InventoryService {
     /**

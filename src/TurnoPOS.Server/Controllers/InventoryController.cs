@@ -6,7 +6,7 @@ using TurnoPOS.Service.Services;
 namespace TurnoPOS.Server.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class InventoryController(IInventoryService inventoryService, ILogger<InventoryController> logger) : ControllerBase
     {
         [HttpGet]

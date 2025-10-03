@@ -47,15 +47,15 @@ export default defineConfig({
     },
     server: {
         proxy: {
-            '^/department': {
+            '^/api/department': {
                 target,
                 secure: false
             },
-            '^/inventory': {
+            '^/api/inventory': {
                 target,
                 secure: false
             },
-            '^/order': {
+            '^/api/order': {
                 target,
                 secure: false
             }
