@@ -1,63 +1,102 @@
-import React, { useState } from 'react';
+﻿import React, { useEffect, useState } from 'react';
+import type OrderLine from '../models/OrderLine';
+import type Item from '../models/Item';
+import inventoryService from '../services/InventoryService';
+import ChooseItem from '../components/order/ChooseItem';
+
+const STATUS_SELECT_ITEM = 1;
+const STATUS_SET_QUANTITY = 2;
+
 
 const NewOrder: React.FC = () => {
-    const [customerName, setCustomerName] = useState('');
-    const [orderItems, setOrderItems] = useState<string[]>([]);
-    const [itemInput, setItemInput] = useState('');
+    const [items, setItems] = useState<Item[]>([]);
+    const [orderLines, setOrderLines] = useState<OrderLine[]>([]);
+    const [status, setStatus] = useState(STATUS_SELECT_ITEM);
+    const [item, setItem] = useState<Item | undefined>();
+    const [quantity, setQuantity] = useState(0);
 
-    const handleAddItem = () => {
-        if (itemInput.trim() !== '') {
-            setOrderItems([...orderItems, itemInput.trim()]);
-            setItemInput('');
+    useEffect(() => {
+        inventoryService.getAll(null, false)
+            .then(data => {
+                setItems(data);
+                console.log('NewOrder: Items loaded');
+            })
+    }, []);
+
+    const handleItemSelected = (selected: Item) => {
+        setItem(selected);
+        setStatus(STATUS_SET_QUANTITY);
+    };
+
+    const handleCancel = () => {
+        reset();
+    }
+
+    const handleAddLineSubmit = () => {
+        if (!quantity) {
+            reset();
+            return;
+        }
+
+        if (item) {
+            const price = item.price || 0;
+            const newOrderLine: OrderLine = {
+                itemId: item.id,
+                price: price,
+                quantity,
+                total: price * quantity,
+                item
+            };
+
+            setOrderLines([...orderLines, newOrderLine]);
+            setQuantity(0);
+            setStatus(STATUS_SELECT_ITEM);
         }
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        // TODO: Implement order submission logic
-        alert(`Order for ${customerName} with items: ${orderItems.join(', ')}`);
-    };
+    const reset = () => {
+        setItem(undefined);
+        setQuantity(0);
+        setStatus(STATUS_SELECT_ITEM);
+    }
 
-    const handleKeyUp = (e: React.KeyboardEvent) => {
-        console.log(e.key);
-    };
+    const newLineForm =
+        <form action={handleAddLineSubmit}>
+            {item?.name}
+            <div>
+                <label htmlFor="quantity">Cantidad:</label>
+                <input
+                    id="quantity"
+                    type="number"
+                    value={quantity}
+                    onChange={e => setQuantity(+e.target.value)}
+                    required
+                    autoFocus
+                    min="0"
+                />
+                <button type="submit">➕</button>
+            </div>
+        </form>;
+
+    const calculateTotal = () =>
+        orderLines.reduce((previous, current) => previous + current.total, 0);
+
 
     return (
-        <div onKeyUp={handleKeyUp}>
+        <div>
             <h1>New Order</h1>
-            <form onSubmit={handleSubmit}>
-                <div>
-                    <label htmlFor="customerName">Customer Name:</label>
-                    <input
-                        id="customerName"
-                        type="text"
-                        value={customerName}
-                        onChange={e => setCustomerName(e.target.value)}
-                        required
-                    />
-                </div>
-                <div>
-                    <label htmlFor="itemInput">Add Item:</label>
-                    <input
-                        id="itemInput"
-                        type="text"
-                        value={itemInput}
-                        onChange={e => setItemInput(e.target.value)}
-                    />
-                    <button type="button" onClick={handleAddItem}>
-                        Add
-                    </button>
-                </div>
-                <div>
-                    <h2>Order Items</h2>
-                    <ul>
-                        {orderItems.map((item, idx) => (
-                            <li key={idx}>{item}</li>
-                        ))}
-                    </ul>
-                </div>
-                <button type="submit">Submit Order</button>
-            </form>
+            {status == STATUS_SELECT_ITEM ? (
+                <ChooseItem items={items} onSelect={handleItemSelected} onCancel={handleCancel} />
+            ) : newLineForm}
+            <div>
+                <h2>Order Items</h2>
+                <ul>
+                    {orderLines.map((line, idx) => (
+                        <li key={idx}>{line.item?.name} - {line.quantity} x {line.price} = {line.total}</li>
+                    ))}
+                </ul>
+                <strong>Total: </strong>{calculateTotal()}
+            </div>
         </div>
     );
 };
