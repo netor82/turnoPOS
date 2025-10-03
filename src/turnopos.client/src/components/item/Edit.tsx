@@ -1,8 +1,10 @@
-﻿import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect, useContext } from 'react';
 import type Item from '../../models/Item';
 import type EntityProps from '../../models/EditEntityProps'
 import AddItem from './Add';
 import inventoryService from '../../services/InventoryService';
+import DepartmentContext from '../../contexts/DepartmentsContext';
+import SelectFromArray from '../SelectFromArray';
 
 const EditItem: React.FC<EntityProps<Item>> = ({ entity, onSave, onCancel }) => {
     const [item, setItem] = useState<Item>(entity);
@@ -11,7 +13,9 @@ const EditItem: React.FC<EntityProps<Item>> = ({ entity, onSave, onCancel }) => 
     const [description, setDescription] = useState(entity.description || '');
     const [price, setPrice] = useState(entity.price || 0);
     const [stock, setStock] = useState(entity.stock || 0);
+    const [departmentId, setDepartmentId] = useState(entity.departmentId);
     const [loading, setLoading] = useState<boolean>(false);
+    const departments = useContext(DepartmentContext);
 
     useEffect(() => {
         if (item.id == 0)
@@ -28,7 +32,7 @@ const EditItem: React.FC<EntityProps<Item>> = ({ entity, onSave, onCancel }) => 
     };
 
     const handleSave = async () => {
-        const newValue: Item = { ...item, name, description, price, stock };
+        const newValue: Item = { ...item, name, description, price, stock, departmentId };
         await inventoryService.update(newValue)
             .then(() => {
                 console.log('new value', newValue);
@@ -55,7 +59,14 @@ const EditItem: React.FC<EntityProps<Item>> = ({ entity, onSave, onCancel }) => 
         setDescription(item.description || '');
         setPrice(item.price || 0);
         setStock(item.stock || 0);
+        setDepartmentId(item.departmentId);
     };
+
+    const getDepartmentName = () => {
+        if (!departmentId) return '-';
+        const department = departments.find(d => d.id === departmentId);
+        return department ? department.name : '-';
+    }
 
     const renderItemForm = (
         <form
@@ -95,7 +106,7 @@ const EditItem: React.FC<EntityProps<Item>> = ({ entity, onSave, onCancel }) => 
                     />
                 </div>
                 <div>
-                    <label htmlFor="stock">Stock:</label>
+                    <label htmlFor="stock">Cantidad en inventario:</label>
                     <input
                         id="stock"
                         type="number"
@@ -104,6 +115,14 @@ const EditItem: React.FC<EntityProps<Item>> = ({ entity, onSave, onCancel }) => 
                         min={0}
                         step={1}
                     />
+                </div>
+                <div>
+                    <label htmlFor="department">De venta en:</label>
+                    <SelectFromArray name="department" options={departments} value={item.departmentId}
+                        placeholder='Seleccione un valor' onChange={(id) => {
+                            console.log('selected value:', id);
+                            setDepartmentId(id);
+                        }} />
                 </div>
             </div>
             <div>
@@ -121,7 +140,7 @@ const EditItem: React.FC<EntityProps<Item>> = ({ entity, onSave, onCancel }) => 
             <ul>
                 <li>Precio: {item.price}</li>
                 <li>Cantidad en inventario: {item.stock}</li>
-                <li>De venta en: {item.department?.name}</li>
+                <li>De venta en: {getDepartmentName()}</li>
                 <li>Descripción: {item.description}</li>
             </ul>
         </div>
