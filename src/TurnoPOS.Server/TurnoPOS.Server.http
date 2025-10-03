@@ -25,3 +25,7 @@ Accept: application/json
 
 ###
 
+GET {{TurnoPOS.Server_HostAddress}}/Inventory/6
+Accept: application/json
+
+###

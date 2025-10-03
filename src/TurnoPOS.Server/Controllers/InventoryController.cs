@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
-using TurnoPOS.Service.Interfaces;
 using TurnoPOS.Data.Models;
+using TurnoPOS.Service.Interfaces;
+using TurnoPOS.Service.Services;
 
 namespace TurnoPOS.Server.Controllers
 {
@@ -32,12 +33,20 @@ namespace TurnoPOS.Server.Controllers
         }
 
         [HttpPut]
-        public async Task<IActionResult> UpdateAsync([FromBody] Item item)
+        public async Task<IActionResult> UpdateAsync([FromBody] Item entity)
         {
-            if (item.Id == 0)
+            if (entity.Id == 0)
                 return BadRequest();
-            await inventoryService.Update(item);
-            return NoContent();
+            try
+            {
+                await inventoryService.Update(entity);
+                return NoContent();
+            }
+            catch (KeyNotFoundException ex)
+            {
+                logger.LogWarning(ex, "Update failed for Item with id {Id}", entity.Id);
+                return NotFound();
+            }
         }
 
         [HttpPatch("{id}/active/{isActive:bool}")]

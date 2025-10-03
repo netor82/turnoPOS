@@ -4,31 +4,33 @@ using TurnoPOS.Service.Interfaces;
 
 namespace TurnoPOS.Service.Services;
 
-public class InventoryService(IGenericRepository genericRepository) : IInventoryService
+public class InventoryService(IGenericRepository repository) : IInventoryService
 {
     public async Task<IEnumerable<Item>> GetAll(int? parentId, bool includeAll = false)
     {
-        var query = genericRepository.Get<Item>(i => 
-            i.ParentId == parentId
-            && (includeAll || i.IsActive));
-        return await genericRepository.ToListAsync(query);
+        var query = repository.Get<Item>(
+            i => 
+                i.ParentId == parentId
+                && (includeAll || i.IsActive),
+            i => i.OrderBy(x => x.IsDirectory));
+        return await repository.ToListAsync(query);
     }
     public async Task<Item> GetById(int id)
     {
-        return await genericRepository.GetById<Item>(id)
+        return await repository.GetById<Item>(id)
             ?? throw new KeyNotFoundException($"Item with id {id} not found.");
     }
     public async Task<Item> Create(Item item)
     {
-        var result = genericRepository.Insert(item);
+        var result = repository.Insert(item);
 
-        await genericRepository.SaveAsync();
+        await repository.SaveAsync();
         return result;
     }
     public async Task Update(Item item)
     {
-        genericRepository.Update(item);
-        await genericRepository.SaveAsync();
+        repository.Update(item);
+        await repository.SaveAsync();
     }
     public async Task<Item> PatchActive(int id, bool isActive)
     {
@@ -37,7 +39,7 @@ public class InventoryService(IGenericRepository genericRepository) : IInventory
         if (item.IsActive != isActive)
         {
             item.IsActive = isActive;
-            genericRepository.Update(item);
+            repository.Update(item);
         }
         return item;
     }
@@ -46,7 +48,7 @@ public class InventoryService(IGenericRepository genericRepository) : IInventory
         var item = await GetById(id);
         
         item.Stock += units;
-        genericRepository.Update(item);
+        repository.Update(item);
         return item;
     }
     public async Task<Item> PatchParent(int id, int? parentId)
@@ -56,18 +58,18 @@ public class InventoryService(IGenericRepository genericRepository) : IInventory
         if (item.ParentId != parentId)
         {
             item.ParentId = parentId;
-            genericRepository.Update(item);
+            repository.Update(item);
         }
         return item;
     }
     public async Task<bool> Delete(int id)
     {
-        var item = await genericRepository.GetById<Item>(id);
+        var item = await repository.GetById<Item>(id);
         if (item == null)
         {
             return false;
         }
-        genericRepository.Delete(item);
+        repository.Delete(item);
         return true;
     }
 }
