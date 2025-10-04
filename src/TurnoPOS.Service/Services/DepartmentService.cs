@@ -17,7 +17,7 @@ public class DepartmentService(IGenericRepository repository) : IDepartmentServi
     public async Task<IList<Department>> GetAll()
     {
         var query = repository.Get<Department>(null, orderBy: x => x.OrderBy(d => d.Name));
-        return await repository.ToListAsync(query);
+        return await repository.ToList(query);
     }
 
     public async Task<Department?> GetById(long id)

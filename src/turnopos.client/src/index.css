@@ -10,11 +10,15 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }
+
 #root {
     max-width: 1280px;
     padding: 2rem;
 }
 
+.strike {
+    text-decoration: line-through;
+}
 
 a {
     font-weight: 500;
@@ -42,33 +46,47 @@ input, select {
     padding: 0.6em 1.2em;
 }
 
-button {
-    border-radius: 8px;
-    border: 1px solid transparent;
-    padding: 0.6em 1.2em;
-    font-weight: 500;
-    font-family: inherit;
-    background-color: #1a1a1a;
-    cursor: pointer;
-    transition: border-color 0.25s;
+    button, input[type=button] {
+        border-radius: 8px;
+        border: 1px solid transparent;
+        padding: 0.6em 1.2em;
+        margin-left: 2px;
+        font-weight: 500;
+        font-family: inherit;
+        background-color: #1a1a1a;
+        cursor: pointer;
+        transition: border-color 0.25s;
+    }
+
+        button:hover {
+            border-color: #646cff;
+        }
+
+        button:focus,
+        button:focus-visible {
+            outline: 4px auto -webkit-focus-ring-color;
+        }
+
+ul {
+    list-style-type: none;
 }
-
-    button:hover {
-        border-color: #646cff;
-    }
-
-    button:focus,
-    button:focus-visible {
-        outline: 4px auto -webkit-focus-ring-color;
-    }
 
 .edit-item {
     padding: 5px;
     border-radius: 10px;
 }
+
 .item-children {
     border-left: 1px solid green;
     margin-left: 1em;
+}
+
+.print-visible {
+    display: none;
+}
+
+.print-order tfoot th, .print-order tbody td:nth-child(3), .print-order tbody td:nth-child(4) {
+    text-align: right;
 }
 
 @media (prefers-color-scheme: light) {
@@ -81,7 +99,25 @@ button {
         color: #747bff;
     }
 
-    button {
-        background-color: #f9f9f9;
+    button, input[type=button] {
+        background-color: #ece9e9;
+    }
+}
+
+@media print {
+    #root {
+        padding: 0;
+    }
+    nav {
+        display: none;
+    }
+    .print-invisible {
+        display: none;
+    }
+    .print-visible {
+        display: inline-block;
+    }
+    .page-break {
+        page-break-after: always;
     }
 }

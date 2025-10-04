@@ -22,6 +22,7 @@ public interface IGenericRepository : IDisposable
     void Update<TEntity>(TEntity entityToUpdate) where TEntity : BaseEntity;
     Task<int> SaveAsync();
     Task<int> CountAsync<TEntity>(IQueryable<TEntity> query) where TEntity : BaseEntity;
-    Task<List<TEntity>> ToListAsync<TEntity>(IQueryable<TEntity> query) where TEntity : BaseEntity;
+    Task<TEntity?> FirstOrDefault<TEntity>(IQueryable<TEntity> query) where TEntity : BaseEntity;
+    Task<List<TEntity>> ToList<TEntity>(IQueryable<TEntity> query) where TEntity : BaseEntity;
     Task<bool> AnyAsync<TEntity>(IQueryable<TEntity> query, Expression<Func<TEntity, bool>> expression) where TEntity : BaseEntity;
 }

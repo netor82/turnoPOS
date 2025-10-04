@@ -62,7 +62,7 @@ const ChooseItem: React.FC<ChooseItemProps> = ({ items, onSelect, onCancel }) =>
             {backButton}
             {children.map((child, index) => (
                 <button key={child.id} onClick={() => handleSelectItem(child)} >
-                    {index + 1} - {!child.isDirectory && !child.stock ? (<strike>{child.name}</strike>) : child.name}
+                    {index + 1} - <strong className={(!child.isDirectory && !child.stock && 'strike') || ''}>{child.name}</strong>
                 </button>
             ))}
         </div>

@@ -20,7 +20,7 @@ public class InventoryService(IGenericRepository repository) : IInventoryService
                 )
                 && (includeAll || i.IsActive),
             i => i.OrderBy(x => x.IsDirectory));
-        return (await repository.ToListAsync(query)).Select(ItemDTO.FromEntity);
+        return (await repository.ToList(query)).Select(ItemDTO.FromEntity);
     }
     public async Task<Item> GetById(int id)
     {

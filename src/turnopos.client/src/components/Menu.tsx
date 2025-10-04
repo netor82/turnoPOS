@@ -8,8 +8,9 @@ const Menu: React.FC = () => {
                 <li>
                     <Link to="/">🏠</Link>
                 </li>
-                <li><Link to="/departments">Departamentos</Link></li>
-                <li><Link to="/inventory">Inventario</Link></li>
+                <li><Link to="/orders">💰 Ventas</Link></li>
+                <li><Link to="/departments">🏛️ Departamentos</Link></li>
+                <li><Link to="/inventory">📃 Inventario</Link></li>
             </ul>
         </nav>
     );

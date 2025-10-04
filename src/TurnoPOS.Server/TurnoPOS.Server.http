@@ -1,4 +1,4 @@
-@TurnoPOS.Server_HostAddress = http://localhost:5248
+@TurnoPOS.Server_HostAddress = http://localhost:5248/api
 
 POST {{TurnoPOS.Server_HostAddress}}/Department
 Content-Type: application/json
@@ -36,6 +36,17 @@ Accept: application/json
 ###
 
 GET {{TurnoPOS.Server_HostAddress}}/Inventory/6
+Accept: application/json
+
+###
+
+
+GET {{TurnoPOS.Server_HostAddress}}/Order
+Accept: application/json
+
+###
+
+GET {{TurnoPOS.Server_HostAddress}}/Order/1
 Accept: application/json
 
 ###

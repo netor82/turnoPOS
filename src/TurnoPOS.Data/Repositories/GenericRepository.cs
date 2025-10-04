@@ -90,7 +90,13 @@ public class GenericRepository(TurnoDbContext context) : IGenericRepository
         return await query.CountAsync();
     }
 
-    public async Task<List<TEntity>> ToListAsync<TEntity>(IQueryable<TEntity> query)
+    public async Task<TEntity?> FirstOrDefault<TEntity>(IQueryable<TEntity> query)
+        where TEntity : BaseEntity
+    {
+        return await query.FirstOrDefaultAsync();
+    }
+
+    public async Task<List<TEntity>> ToList<TEntity>(IQueryable<TEntity> query)
         where TEntity : BaseEntity
     {
         return await query.ToListAsync();

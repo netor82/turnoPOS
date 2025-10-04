@@ -3,6 +3,8 @@ import Menu from './components/Menu';
 import DepartmentManagement from './pages/DepartmentManagement'
 import InventoryManagement from './pages/InventoryManagement'
 import NewOrder from './pages/NewOrder';
+import Orders from './pages/Orders';
+import PrintOrder from './pages/PrintOrder'
 import { useEffect, useState } from 'react';
 import type Department from './models/Department';
 import departmentService from './services/DepartmentService';
@@ -31,6 +33,8 @@ function App() {
                     <Routes>
                         <Route path="/departments" element={<DepartmentManagement onChange={fetchDepartments} />} />
                         <Route path="/inventory" element={<InventoryManagement />} />
+                        <Route path="/orders" element={<Orders />} />
+                        <Route path="/printOrder/:id" element={<PrintOrder />} />
                         <Route path="/" element={<NewOrder />} />
                     </Routes>
                 </DepartmentsContext>

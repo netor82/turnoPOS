@@ -1,4 +1,5 @@
-﻿using TurnoPOS.Data.Models.Base;
+﻿using System.Text.Json.Serialization;
+using TurnoPOS.Data.Models.Base;
 
 namespace TurnoPOS.Data.Models;
 
@@ -9,6 +10,8 @@ public class OrderLine : BaseEntity
     public decimal Price { get; set; }
     public int Quantity { get; set; }
     public decimal Total => Price * Quantity;
+
+    [JsonIgnore]
     public Order? Order { get; set; }
     public Item? Item { get; set; }
 }
