@@ -44,6 +44,7 @@ h1 {
 
 input, select {
     padding: 0.6em 1.2em;
+    box-sizing: border-box;
 }
 
     button, input[type=button] {
@@ -69,6 +70,12 @@ input, select {
 
 ul {
     list-style-type: none;
+    padding-left: 0em;
+}
+
+nav li {
+    display: inline-block;
+    padding-right: 15px;
 }
 
 .edit-item {
@@ -108,15 +115,19 @@ ul {
     #root {
         padding: 0;
     }
+
     nav {
         display: none;
     }
+
     .print-invisible {
         display: none;
     }
+
     .print-visible {
         display: inline-block;
     }
+
     .page-break {
         page-break-after: always;
     }

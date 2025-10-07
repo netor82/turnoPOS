@@ -164,6 +164,8 @@ const EditItem: React.FC<EntityProps<Item>> = ({ entity, onSave, onCancel }) => 
                 onChange={e => setName(e.target.value)}
                 required
             />
+            <button type="submit" formAction={handleSave}>Save</button>
+            <button type="button" onClick={handleCancel}>Cancel</button>
         </form>
     );
 

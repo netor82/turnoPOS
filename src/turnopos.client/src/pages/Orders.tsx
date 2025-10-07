@@ -40,17 +40,16 @@ const Orders: React.FC = () => {
         <>
             Total en órdenes (excluye canceladas): <strong>{formatCurrency(calculateTotal())}</strong>
 
-            <p>Si existen órdenes, aparecen las más recientes de primero.
-                <ol>
-                    {orders.map((order, idx) =>
-                        <li className={order.status == STATUS_CANCELLED ? 'strike' : ''}>
-                            {formatDate(order.createdAt)} - Total: {formatCurrency(order.total)}
-                            {order.status != STATUS_CANCELLED ? <button onClick={() => handleCancel(order.id)}>❌ Cancelar</button> : null}
-                            <a href={'./printOrder/' + order.id} target="_blank">🖨️ Imprimir</a>
-                        </li>
-                    )}
-                </ol>
-            </p>
+            <p>Si existen órdenes, aparecen las más recientes de primero.</p>
+            <ol>
+                {orders.map(order =>
+                    <li key={order.id} className={order.status == STATUS_CANCELLED ? 'strike' : ''}>
+                        {formatDate(order.createdAt)} - Total: {formatCurrency(order.total)}
+                        {order.status != STATUS_CANCELLED ? <button onClick={() => handleCancel(order.id)}>❌ Cancelar</button> : null}
+                        <a href={'./printOrder/' + order.id} target="_blank">🖨️ Imprimir</a>
+                    </li>
+                )}
+            </ol>
         </>
 
     return loading ? 'Cargando...' : listOfOrders;

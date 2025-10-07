@@ -102,9 +102,10 @@ const NewOrder: React.FC = () => {
 
     const newLineForm =
         <form action={handleAddLineSubmit}>
-            {item?.name}
+            <h3>{item?.name}</h3>
             <div>
-                <label htmlFor="quantity">Cantidad:</label>
+                <p>Si deja la cantidad en cero, no se añade el elemento.</p>
+                <label htmlFor="quantity">Cantidad: </label>
                 <input
                     id="quantity"
                     type="number"
@@ -144,7 +145,7 @@ const NewOrder: React.FC = () => {
                 <ChooseItem items={items} onSelect={handleItemSelected} onCancel={() => { }} />
             ) : status == STATUS_SET_QUANTITY ? newLineForm : cancelForm}
             <div>
-                <h2>Items</h2>
+                <h2>Items en la orden</h2>
                 <ul>
                     {orderLines.map((line, idx) => (
                         <li key={idx}>

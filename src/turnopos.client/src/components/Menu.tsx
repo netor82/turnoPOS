@@ -6,7 +6,7 @@ const Menu: React.FC = () => {
         <nav>
             <ul>
                 <li>
-                    <Link to="/">🏠</Link>
+                    <Link to="/">🏠 Inicio</Link>
                 </li>
                 <li><Link to="/orders">💰 Ventas</Link></li>
                 <li><Link to="/departments">🏛️ Departamentos</Link></li>
