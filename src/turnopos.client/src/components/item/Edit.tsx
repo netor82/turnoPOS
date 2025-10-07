@@ -1,10 +1,10 @@
-﻿import React, { useState, useEffect, useContext } from 'react';
+﻿import React, { useState, useContext } from 'react';
 import type Item from '../../models/Item';
 import type EntityProps from '../../models/EditEntityProps'
-import AddItem from './Add';
 import inventoryService from '../../services/InventoryService';
 import DepartmentContext from '../../contexts/DepartmentsContext';
 import SelectFromArray from '../SelectFromArray';
+import { formatCurrency, formatNumber } from '../../utils/formatter'
 
 const EditItem: React.FC<EntityProps<Item>> = ({ entity, onSave, onCancel }) => {
     const [item, setItem] = useState<Item>(entity);
@@ -14,25 +14,7 @@ const EditItem: React.FC<EntityProps<Item>> = ({ entity, onSave, onCancel }) => 
     const [price, setPrice] = useState(entity.price || 0);
     const [stock, setStock] = useState(entity.stock || 0);
     const [departmentId, setDepartmentId] = useState(entity.departmentId);
-    const [loading, setLoading] = useState<boolean>(false);
     const departments = useContext(DepartmentContext);
-
-    useEffect(() => {
-        if (item.id == 0)
-            fetchItems();
-    }, []);
-
-    const fetchItems = () => {
-        setLoading(true);
-        inventoryService.getAll(item.id, true)
-            .then(data => {
-                console.log('Item Edit - fetchItems: children loaded for ', item.id);
-                const newItem: Item = { ...item, childrenLoaded: true, children: data };
-                setItem(newItem);
-            })
-            .catch(e => console.error(e))
-            .finally(() => setLoading(false));
-    };
 
     const handleSave = async () => {
         const newValue: Item = { ...item, name, description, price, stock, departmentId };
@@ -51,11 +33,6 @@ const EditItem: React.FC<EntityProps<Item>> = ({ entity, onSave, onCancel }) => 
         setEditMode(false);
         if (onCancel) onCancel(item.id);
     };
-
-    const handleItemAdded = (itemAdded: Item) => {
-        const newItem: Item = { ...item, children: item.children?.concat(itemAdded) };
-        setItem(newItem);
-    }
 
     const reset = () => {
         setName(item.name);
@@ -87,7 +64,8 @@ const EditItem: React.FC<EntityProps<Item>> = ({ entity, onSave, onCancel }) => 
                     required
                 />
             </div>
-            <div>
+            <hr />
+            <div className="edit-item-fields">
                 <div>
                     <label htmlFor="description">Descripción:</label>
                     <input
@@ -128,6 +106,7 @@ const EditItem: React.FC<EntityProps<Item>> = ({ entity, onSave, onCancel }) => 
                         }} />
                 </div>
             </div>
+            <hr />
             <div>
                 <button type="submit" formAction={handleSave}>Save</button>
                 <button type="button" onClick={handleCancel}>Cancel</button>
@@ -137,64 +116,21 @@ const EditItem: React.FC<EntityProps<Item>> = ({ entity, onSave, onCancel }) => 
     );
 
     const renderItemView = (
-        <div>
-            <span><strong>{item.name}</strong> <button onClick={() => setEditMode(true)}>📝</button></span>
+        <p>
+            <h3>{item.name} <button onClick={() => setEditMode(true)}>📝</button></h3>
             {item.description}
             <ul>
-                <li>Precio: {item.price}</li>
-                <li>Cantidad en inventario: {item.stock}</li>
+                <li>Precio: <strong>{formatCurrency(item.price || 0)}</strong></li>
+                <li>Cantidad en inventario: {formatNumber(item.stock || 0)}</li>
                 <li>De venta en: {getDepartmentName()}</li>
                 <li>Descripción: {item.description}</li>
             </ul>
-        </div>
+        </p>
     );
-
-    const renderDirectoryView = (
-        <span><strong>{item.name}</strong>
-            {item.id ? (<button onClick={() => setEditMode(true)}>📝</button>) : ''}
-        </span>
-    );
-
-    const renderDirectoryForm = (
-        <form>
-            <input
-                id="name"
-                type="text"
-                value={name}
-                onChange={e => setName(e.target.value)}
-                required
-            />
-            <button type="submit" formAction={handleSave}>Save</button>
-            <button type="button" onClick={handleCancel}>Cancel</button>
-        </form>
-    );
-
-    const renderChildren = (item: Item) => {
-        if (loading) return (<p>Loading...</p>);
-
-        if (item.childrenLoaded && !item.children?.length) return (<p>Sin hijos</p>);
-
-        if (!item.isDirectory) return '';
-
-        if (!item.childrenLoaded) return (<input type="button" value="Cargar hijos" onClick={fetchItems} />);
-
-        return (
-            <div className="item-children">
-                {item.children && item.children.map(x => (
-                    <EditItem key={x.id} entity={x} />
-                ))}
-            </div>
-        );
-    }
 
     return (
         <div className="edit-item">
-            {!item.isDirectory && editMode && renderItemForm}
-            {!item.isDirectory && !editMode && renderItemView}
-            {item.isDirectory && !editMode && renderDirectoryView}
-            {item.isDirectory && editMode && renderDirectoryForm}
-            {renderChildren(item)}
-            {!loading && (<AddItem entity={item} onSave={handleItemAdded}/>)}
+            {editMode ? renderItemForm : renderItemView}
         </div>
     );
 };

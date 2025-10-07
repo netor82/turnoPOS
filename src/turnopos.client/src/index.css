@@ -78,10 +78,22 @@ nav li {
     padding-right: 15px;
 }
 
+select {
+    min-width: 205px;
+}
+
 .edit-item {
     padding: 5px;
     border-radius: 10px;
 }
+
+    .edit-item form {
+        margin: 20px;
+    }
+
+    .edit-item .edit-item-fields > div {
+        text-align:right;
+    }
 
 .item-children {
     border-left: 1px solid green;
