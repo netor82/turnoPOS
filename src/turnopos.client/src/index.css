@@ -100,6 +100,35 @@ select {
     margin-left: 1em;
 }
 
+.item-picker {
+    display: grid;
+    place-content: stretch stretch;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows: 35px 130px 130px 130px;
+    gap: 3px 3px;
+    max-width: 600px;
+}
+
+    .item-picker input {
+        width: 100%;
+    }
+
+    .item-picker button {
+        position: relative;
+    }
+
+        .item-picker button .item-picker-number {
+            position: absolute;
+            left: 10px;
+            top: 10px;
+        }
+
+        .item-picker button .item-picker-stock {
+            position: absolute;
+            right: 10px;
+            bottom: 10px;
+        }
+
 .print-visible {
     display: none;
 }
