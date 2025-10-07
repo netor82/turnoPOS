@@ -70,7 +70,7 @@ const ChooseItem: React.FC<ChooseItemProps> = ({ items, onSelect, onCancel, sele
             <button key={child.id} onClick={() => handleSelectItem(child)} >
                 <span className="item-picker-number">{index + 1}</span>
                 <span className={'item-name' + (!child.isDirectory && !child.stock && ' strike' || '')}>{child.name}</span>
-                <span className="item-picker-stock">{child.isDirectory ? '' : child.stock}</span>
+                <span className="item-picker-stock">{child.isDirectory ? '📁' : child.stock}</span>
             </button>;
 
     const renderSelectDiretoryButton =

@@ -38,6 +38,7 @@ const Orders: React.FC = () => {
 
     const listOfOrders = !orders.length ? <p>No existen órdenes.</p> :
         <>
+            <h1>Ventas</h1>
             Total en órdenes (excluye canceladas): <strong>{formatCurrency(calculateTotal())}</strong>
 
             <p>Si existen órdenes, aparecen las más recientes de primero.</p>
