@@ -31,13 +31,14 @@ const EditDirectory: React.FC<EntityProps<Item>> = ({ entity, onSave, onCancel }
         setActive(entity.isActive);
     };
 
-    const renderDirectoryView = (
-        <span>
-            <strong>{entity.name}</strong>
-            &nbsp;
-            {entity.id ? (<button onClick={() => setEditMode(true)}>📝 Editar</button>) : ''}
-        </span>
-    );
+    const renderDirectoryView =
+        !entity.id ? null :
+            <span>
+                <strong>{entity.name}</strong>
+                &nbsp;
+                <button onClick={() => setEditMode(true)}>📝 Editar</button>
+            </span>
+        ;
 
     const renderDirectoryForm = (
         <form>

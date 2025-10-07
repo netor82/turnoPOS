@@ -57,8 +57,9 @@ const InventoryManagement: React.FC = () => {
     const renderBreadcrum =
         (<div className="nav">
             {navigationStack.map((i, index) => index == navigationStack.length - 1 ?
-                <a href="#" onClick={() => navigateBackToItem()}>{i.name} &gt;</a> :
-                <span>{i.name} &gt;</span>)}
+                <a href="#" onClick={() => navigateBackToItem()}> {i.name} &gt;</a> :
+                <span> {i.name} &gt;</span>)}
+            <span> {item.name}</span>
         </div>);
 
     const renderItem = 
