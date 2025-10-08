@@ -37,3 +37,8 @@ npm run build
 ```bash
 dotnet ef migrations add --project TurnoPOS.Data --context TurnoPOS.Data.TurnoDbContext --startup-project TurnoPOS.Server Initial
 ```
+
+# Publish
+```bash
+ dotnet publish /p:PublishSingleFile=true -c Release -r win-x64 --self-contained true
+```

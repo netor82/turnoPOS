@@ -3,12 +3,11 @@ import { useParams } from 'react-router-dom'
 import type Order from '../models/Order';
 import orderService from '../services/OrderService';
 import DepartmentsContext from '../contexts/DepartmentsContext';
-import { formatCurrency, formatNumber } from '../utils/formatter'
+import { formatCurrency, formatNumber } from '../utils/Formatter'
 
 
 const PrintOrder: React.FC = () => {
     const [order, setOrder] = useState<Order | null>(null);
-    const [loading, setLoading] = useState(false);
     const { id } = useParams()
     const departments = useContext(DepartmentsContext);
 
@@ -18,10 +17,8 @@ const PrintOrder: React.FC = () => {
         const numberId = Number(id);
         if (!id || isNaN(numberId) || numberId < 1) return;
 
-        setLoading(true);
         orderService.getById(+id)
-            .then(data => setOrder(data))
-            .finally(() => setLoading(false));
+            .then(data => setOrder(data));
     }, []);
 
     const renderTitle = (!order || order.status == STATUS_CANCELLED) ?

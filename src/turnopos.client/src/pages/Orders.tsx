@@ -1,7 +1,7 @@
 ﻿import React, { useEffect, useState } from 'react';
 import type Order from '../models/Order';
 import orderService from '../services/OrderService';
-import { formatDate, formatCurrency } from '../utils/formatter';
+import { formatDate, formatCurrency } from '../utils/Formatter';
 
 const Orders: React.FC = () => {
     const [orders, setOrders] = useState<Order[]>([]);

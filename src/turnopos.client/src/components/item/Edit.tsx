@@ -4,7 +4,7 @@ import type EntityProps from '../../models/EditEntityProps'
 import inventoryService from '../../services/InventoryService';
 import DepartmentContext from '../../contexts/DepartmentsContext';
 import SelectFromArray from '../SelectFromArray';
-import { formatCurrency, formatNumber } from '../../utils/formatter'
+import { formatCurrency, formatNumber } from '../../utils/Formatter'
 
 const EditItem: React.FC<EntityProps<Item>> = ({ entity, onSave, onCancel }) => {
     const [item, setItem] = useState<Item>(entity);
