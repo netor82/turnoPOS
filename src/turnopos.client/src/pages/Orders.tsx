@@ -23,6 +23,14 @@ const Orders: React.FC = () => {
         }
     }
 
+    const handlePrint = (id: number) => {
+        if (id) {
+            orderService
+                .print(id)
+                .catch(e => console.error(e));
+        }
+    }
+
     const fetchOrders = () => {
         setLoading(true);
         orderService.getAll()
@@ -45,9 +53,10 @@ const Orders: React.FC = () => {
             <ol>
                 {orders.map(order =>
                     <li key={order.id} className={order.status == STATUS_CANCELLED ? 'strike' : ''}>
-                        {formatDate(order.createdAt)} - Total: {formatCurrency(order.total)}
+                        Orden: {order.id} del {formatDate(order.createdAt)}. Total: {formatCurrency(order.total)}
                         {order.status != STATUS_CANCELLED ? <button onClick={() => handleCancel(order.id)}>❌ Cancelar</button> : null}
-                        <a href={'./printOrder/' + order.id} target="_blank">🖨️ Imprimir</a>
+                        {order.status != STATUS_CANCELLED ? <button onClick={() => handlePrint(order.id)}>🖨️ Imprimir</button> : null}
+                        <a href={'./printOrder/' + order.id} target="_blank">🕶️ Ver</a>
                     </li>
                 )}
             </ol>

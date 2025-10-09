@@ -1,14 +1,15 @@
 ﻿using TurnoPOS.Data.Models;
 using TurnoPOS.Data.Repositories;
 using TurnoPOS.Service.Interfaces;
+using TurnoPOS.Service.Model;
 
 namespace TurnoPOS.Service.Services;
 
-public class OrderService(IGenericRepository genericRepository) : IOrderService
+public class OrderService(IGenericRepository genericRepository, IThermalPrinterService printer) : IOrderService
 {
     public async Task<Order> Create(Order order)
     {
-        await UpdateItemStock(order, decrease:true);
+        await UpdateItemStock(order, decrease: true);
         order.Status = OrderStatus.Completed;
         var result = genericRepository.Insert(order);
 
@@ -20,10 +21,10 @@ public class OrderService(IGenericRepository genericRepository) : IOrderService
     {
         List<long> itemIds = [.. order.OrderLines.Select(ol => ol.ItemId).Distinct()];
         var itemsQuery = genericRepository.Get<Item>(i => itemIds.Contains(i.Id));
-        
+
         var items = (await genericRepository.ToList(itemsQuery))
             .ToDictionary(x => x.Id);
-        
+
         foreach (var orderLine in order.OrderLines)
         {
             if (items.TryGetValue(orderLine.ItemId, out var item))
@@ -48,9 +49,12 @@ public class OrderService(IGenericRepository genericRepository) : IOrderService
             .FirstOrDefault();
     }
 
-    private async Task<Order> Get(int id)
+    private async Task<Order> Get(int id, bool withItems = false)
     {
-        var query = genericRepository.Get<Order>(x => x.Id == id, nameof(Order.OrderLines));
+        var query = genericRepository.Get<Order>(x => x.Id == id,
+            withItems
+            ? $"{nameof(Order.OrderLines)}.{nameof(OrderLine.Item)}.{nameof(Item.Department)}"
+            : nameof(Order.OrderLines));
         return await genericRepository.FirstOrDefault(query)
             ?? throw new KeyNotFoundException($"Item with id {id} not found.");
     }
@@ -64,7 +68,64 @@ public class OrderService(IGenericRepository genericRepository) : IOrderService
         var order = await Get(id);
         order.Status = OrderStatus.Cancelled;
         genericRepository.Update(order);
-        await UpdateItemStock(order, decrease:false);
+        await UpdateItemStock(order, decrease: false);
         await genericRepository.SaveAsync();
+    }
+
+    public async Task Print(int id)
+    {
+        var order = await Get(id, true);
+        var lines = new List<PrintLine>
+        {
+            new() { Type = PrintLineType.Header, Text = $"Detalles de la orden " + order.Id },
+            new() { Type = PrintLineType.Text, Text = order.CreatedAt.ToString("d/M/yyyy hh:mm:ss tt") },
+            new() { Type = PrintLineType.BlankLine, Text = "" },
+            new() { Type = PrintLineType.TableHeader1, Text = "Detalle" },
+            new() { Type = PrintLineType.TableHeader2, Text = "Precio" },
+            new() { Type = PrintLineType.TableHeader3, Text = "Subtotal" },
+        };
+
+        foreach (var line in order.OrderLines)
+        {
+            lines.Add(new PrintLine
+            {
+                Type = PrintLineType.TableColumn1,
+                Text = $"{line.Quantity} x {line.Item?.Name ?? "N/A"}"
+            });
+            lines.Add(new PrintLine
+            {
+                Type = PrintLineType.TableColumn2,
+                Text = $"{line.Price:N0}"
+            });
+            lines.Add(new PrintLine
+            {
+                Type = PrintLineType.TableColumn3,
+                Text = $"{(line.Price * line.Quantity):N0}"
+            });
+        }
+
+        var totalPrice = order.OrderLines.Sum(ol => ol.Price * ol.Quantity);
+        lines.Add(new PrintLine { Type = PrintLineType.BlankLine, Text = "" });
+        lines.Add(new PrintLine { Type = PrintLineType.TableHeader2, Text = "Total:" });
+        lines.Add(new PrintLine { Type = PrintLineType.TableHeader3, Text = $"₡{totalPrice:N0}" });
+
+        printer.Print(lines);
+
+        var itemsByDepartment = order.OrderLines.GroupBy(ol => ol.Item!.Department);
+        foreach (var group in itemsByDepartment)
+        {
+            lines.Clear();
+            lines.Add(new() { Type = PrintLineType.Text, Text = $"Orden {id}. Retirar en: " + (group.Key?.Name ?? "Cocina") });
+            lines.Add(new PrintLine { Type = PrintLineType.BlankLine, Text = "" });
+
+            foreach (var line in group)
+            {
+                lines.Add(new() { Type = PrintLineType.Text, Text = $"{line.Quantity} x {line.Item?.Name ?? "N/A"}" });
+            }
+            printer.Print(lines);
+        }
+
+        lines.Clear();
+
     }
 }

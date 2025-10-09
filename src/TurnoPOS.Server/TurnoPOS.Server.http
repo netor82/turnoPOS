@@ -50,3 +50,8 @@ GET {{TurnoPOS.Server_HostAddress}}/Order/1
 Accept: application/json
 
 ###
+
+GET {{TurnoPOS.Server_HostAddress}}/Order/10/print
+Accept: application/json
+
+###

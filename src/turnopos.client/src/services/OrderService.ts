@@ -41,6 +41,15 @@ class OrderService {
     static async cancel(id: number): Promise<void> {
         await axios.post(`${API_BASE_URL}/${id}/cancel`);
     }
+
+    /**
+     * Print to a physical printer
+     * @param id Order ID
+     * @returns Promise<void>
+     */
+    static async print(id: number): Promise<void> {
+        await axios.get(`${API_BASE_URL}/${id}/print`);
+    }
 }
 
 export default OrderService;

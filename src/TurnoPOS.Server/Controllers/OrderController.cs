@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using TurnoPOS.Service.Interfaces;
 using TurnoPOS.Data.Models;
 
@@ -6,7 +6,7 @@ namespace TurnoPOS.Server.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class OrderController(IOrderService orderService) : ControllerBase
+    public class OrderController(IOrderService orderService, IThermalPrinterService printer) : ControllerBase
     {
         // Create a new order
         [HttpPost]
@@ -39,6 +39,14 @@ namespace TurnoPOS.Server.Controllers
         public async Task<IActionResult> Cancel(int id)
         {
             await orderService.Cancel(id);
+            return NoContent();
+        }
+
+        [HttpGet("{id}/print")]
+        public async Task<IActionResult> Print(int id)
+        {
+            await orderService.Print(id);
+
             return NoContent();
         }
     }

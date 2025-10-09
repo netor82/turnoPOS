@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 using TurnoPOS.Data.Models.Base;
 
 namespace TurnoPOS.Data.Models;
@@ -15,7 +16,7 @@ public class Item : BaseEntity
     public int Order { get; set; }
     public bool IsActive { get; set; } = true;
 
-    [ForeignKey(nameof(ParentId))]
+    [ForeignKey(nameof(ParentId)), JsonIgnore]
     public Item? Parent { get; set; }
 
     [ForeignKey(nameof(DepartmentId))]
