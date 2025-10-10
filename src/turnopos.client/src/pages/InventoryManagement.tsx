@@ -52,10 +52,10 @@ const InventoryManagement: React.FC = () => {
         setItem(newItem);
     }
 
-    const navigateBackToItem = () => {
-        const popItem = navigationStack[navigationStack.length - 1];
-        setNavigationStack(navigationStack.slice(0, navigationStack.length - 1));
-        setItem(popItem);
+    const navigateBackToItem = (index: number) => {
+        const selectedItem = navigationStack[index];
+        setNavigationStack(navigationStack.slice(0, index));
+        setItem(selectedItem);
         resetMoving();
     }
 
@@ -101,9 +101,8 @@ const InventoryManagement: React.FC = () => {
 
     const renderBreadcrum =
         (<div className="nav">
-            {navigationStack.map((i, index) => index == navigationStack.length - 1 ?
-                <a href="#" onClick={() => navigateBackToItem()}> {i.name} &gt;</a> :
-                <span> {i.name} &gt;</span>)}
+            {navigationStack.map((i, index) =>
+                <a href="#" onClick={() => navigateBackToItem(index)}> {i.name} &gt;</a>)}
             <span> {item.name}</span>
         </div>);
 
