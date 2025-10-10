@@ -5,6 +5,7 @@ import EditItem from '../components/item/Edit';
 import EditDirectory from '../components/item/EditDirectory';
 import AddItem from '../components/item/Add';
 import ChooseItem from '../components/order/ChooseItem';
+import InventorySummary from '../components/item/InventorySummary';
 
 
 const InventoryManagement: React.FC = () => {
@@ -21,6 +22,7 @@ const InventoryManagement: React.FC = () => {
     const [isMoving, setIsMoving] = useState<boolean>(false);
     const [newParent, setNewParent] = useState<Item | null>(null);
     const [moveToItems, setMoveToItems] = useState<Item[]>([]);
+    const [showSummary, setShowSummary] = useState<boolean>(false);
 
     useEffect(() => {
         if (!item.childrenLoaded && item.isDirectory) {
@@ -50,6 +52,7 @@ const InventoryManagement: React.FC = () => {
     const navigateToItem = (newItem: Item) => {
         setNavigationStack([...navigationStack, item]);
         setItem(newItem);
+        setShowSummary(false);
     }
 
     const navigateBackToItem = (index: number) => {
@@ -97,6 +100,7 @@ const InventoryManagement: React.FC = () => {
     const resetMoving = () => {
         setNewParent(null);
         setIsMoving(false);
+        setShowSummary(false);
     }
 
     const renderBreadcrum =
@@ -150,6 +154,10 @@ const InventoryManagement: React.FC = () => {
                 <button onClick={resetMoving}>Cancel</button>
             </>;
 
+    const renderInventorySummary = showSummary ?
+        <InventorySummary items={moveToItems} /> :
+        <p><hr/><button onClick={() => setShowSummary(true)}>Ver Resumen</button></p>;
+
     return (
         <div>
             <h1>Inventario</h1>
@@ -162,6 +170,7 @@ const InventoryManagement: React.FC = () => {
                     {!loading && (<AddItem entity={item} onSave={handleItemAdded} />)}
                 </>
             }
+            {renderInventorySummary}
         </div>
     );
 };
