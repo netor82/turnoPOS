@@ -28,7 +28,7 @@ const ChooseItem: React.FC<ChooseItemProps> = ({ items, onSelect, onCancel, sele
         }
     }
 
-    const children = items.filter(i => i.parentId == selectedItem?.id && (!selectDirectory || i.isDirectory));
+    const children = items.filter(i => i.parentId == selectedItem?.id);
 
     const handleKeyUp = (e: React.KeyboardEvent) => {
         const key = +e.key;
@@ -67,14 +67,15 @@ const ChooseItem: React.FC<ChooseItemProps> = ({ items, onSelect, onCancel, sele
             </button>
         )
     const renderItemButton = (child: Item, index: number) =>
-            <button key={child.id} onClick={() => handleSelectItem(child)} >
+        <button key={child.id} onClick={() => handleSelectItem(child)}
+            disabled={!child.isActive || (selectDirectory && !child.isDirectory)}>
                 <span className="item-picker-number">{index + 1}</span>
                 <span className={'item-name' + (!child.isDirectory && !child.stock && ' strike' || '')}>{child.name}</span>
                 <span className="item-picker-stock">{child.isDirectory ? '📁' : child.stock}</span>
-            </button>;
+        </button>;
 
     const renderSelectDiretoryButton =
-        (selectDirectory && selectedItem && selectedItem.children && selectedItem.children.length < 9) ?
+        (selectDirectory && selectedItem && children.length < 9) ?
             <button onClick={() => handleSelectDirectory()}>
                 Mover aquí
             </button>

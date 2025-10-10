@@ -67,6 +67,12 @@ input, select {
         button:focus-visible {
             outline: 4px auto -webkit-focus-ring-color;
         }
+        button[disabled] {
+            cursor: not-allowed;
+        }
+        button[disabled]:hover {
+            border-color: initial;
+        }
 
 ul {
     list-style-type: none;
@@ -92,7 +98,7 @@ select {
     }
 
     .edit-item .edit-item-fields > div {
-        text-align:right;
+        text-align: right;
     }
 
 .item-children {

@@ -4,6 +4,7 @@ import inventoryService from '../services/InventoryService';
 import EditItem from '../components/item/Edit';
 import EditDirectory from '../components/item/EditDirectory';
 import AddItem from '../components/item/Add';
+import ChooseItem from '../components/order/ChooseItem';
 
 
 const InventoryManagement: React.FC = () => {
@@ -17,41 +18,85 @@ const InventoryManagement: React.FC = () => {
     });
     const [navigationStack, setNavigationStack] = useState<Item[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
+    const [isMoving, setIsMoving] = useState<boolean>(false);
+    const [newParent, setNewParent] = useState<Item | null>(null);
+    const [moveToItems, setMoveToItems] = useState<Item[]>([]);
 
     useEffect(() => {
         if (!item.childrenLoaded && item.isDirectory) {
             setLoading(true);
             fetchItems();
         }
-    }, [item.id]);
+    }, [item]);
 
     const fetchItems = () => {
         inventoryService.getAll(item.id, true)
             .then(data => {
-                console.log('Item Edit - fetchItems: children loaded for ', item.id);
+                console.log(`Item Edit - fetchItems: children loaded for ${item.id}-${item.name}`);
                 const newItem: Item = { ...item, childrenLoaded: true, children: data };
                 setItem(newItem);
             })
+            .then(() => fetchItemsForMoving())
             .catch(e => console.error(e))
             .finally(() => setLoading(false));
     };
 
+    const fetchItemsForMoving = () => {
+        inventoryService.getAll(null, true)
+            .then(data => setMoveToItems(data))
+            .catch(e => console.error(e));
+    }
+
     const navigateToItem = (newItem: Item) => {
         setNavigationStack([...navigationStack, item]);
         setItem(newItem);
-        console.log(`Agregué al stack a ${item.name}, item es ${newItem.name}`);
     }
 
     const navigateBackToItem = () => {
         const popItem = navigationStack[navigationStack.length - 1];
         setNavigationStack(navigationStack.slice(0, navigationStack.length - 1));
         setItem(popItem);
-        console.log(`Saqué del stack a ${popItem.name}`);
+        resetMoving();
     }
 
     const handleItemAdded = (itemAdded: Item) => {
         const newItem: Item = { ...item, children: item.children?.concat(itemAdded) };
         setItem(newItem);
+    }
+
+    const handleMoveItem = () => {
+        resetMoving();
+        if (newParent && newParent.id != item.parentId) {
+
+            if (newParent.id == item.id) {
+                alert('No puede incluir a un directorio dentro de sí mismo');
+                return;
+            }
+
+            inventoryService.update({ ...item, parentId: newParent.id })
+                .then(() => {
+                    // utilitary function to calculate new navigation
+                    const findParentOf = (i: Item) => moveToItems.find(x => x.id == i.parentId);
+
+                    // calculate new navigation
+                    const newNavigationStack: Item[] = [];
+                    for (let foundParent = findParentOf(newParent); foundParent; foundParent = findParentOf(foundParent)) {
+                        newNavigationStack.unshift(foundParent);
+                    }
+                    newNavigationStack.unshift(navigationStack[0]); // always add the 🏠
+
+
+                    setNavigationStack(newNavigationStack);
+                    setItem(newParent);
+                    fetchItemsForMoving();
+                })
+                .catch(e => console.error(e));
+        }
+    }
+
+    const resetMoving = () => {
+        setNewParent(null);
+        setIsMoving(false);
     }
 
     const renderBreadcrum =
@@ -62,17 +107,21 @@ const InventoryManagement: React.FC = () => {
             <span> {item.name}</span>
         </div>);
 
-    const renderItem = 
-        loading ? <p>Loading...</p> :
-        item.isDirectory
-            ? <EditDirectory entity={item} onChanged={(e) => setItem(e)} onSave={(e) => setItem(e)} />
-            : <EditItem entity={item} onChanged={(e) => setItem(e)} onSave={(e) => setItem(e)} />;
+    const renderMoveToButton =
+        !item.id || isMoving ? null :
+            (<p className=""><hr /><button onClick={() => setIsMoving(true)}>↗️ Mover a otro lugar</button></p>);
+
+    const renderItem =
+        loading ? <p>Cargando...</p> :
+            item.isDirectory
+                ? <EditDirectory entity={item} onChanged={(e) => setItem(e)} onSave={(e) => setItem(e)} />
+                : <EditItem entity={item} onChanged={(e) => setItem(e)} onSave={(e) => setItem(e)} />;
 
     const renderChildren = () => {
         if (!loading && item.childrenLoaded && item.children) {
 
             if (item.children.length === 0) {
-                return <p>No hay elementos en este directorio.</p>;
+                return <p>No hay elementos en esta categoría.</p>;
             }
             return (
                 <ol>
@@ -89,13 +138,31 @@ const InventoryManagement: React.FC = () => {
         return null;
     }
 
+    const renderMovingControls =
+        !newParent ?
+            <ChooseItem selectDirectory={true} onCancel={resetMoving}
+                onSelect={newParent => setNewParent(newParent)}
+                items={moveToItems}
+            />
+            : <>
+                Mover a {newParent.name}
+                <hr />
+                <button onClick={handleMoveItem}>Save</button>
+                <button onClick={resetMoving}>Cancel</button>
+            </>;
+
     return (
         <div>
             <h1>Inventario</h1>
             {renderBreadcrum}
-            {renderItem}
-            {renderChildren()}
-            {!loading && (<AddItem entity={item} onSave={handleItemAdded} />)}
+            {renderMoveToButton}
+            {isMoving ? renderMovingControls :
+                <>
+                    {renderItem}
+                    {renderChildren()}
+                    {!loading && (<AddItem entity={item} onSave={handleItemAdded} />)}
+                </>
+            }
         </div>
     );
 };
