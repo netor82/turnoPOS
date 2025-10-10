@@ -97,7 +97,6 @@ public class GenericRepository(TurnoDbContext context) : IGenericRepository
     }
 
     public async Task<List<TEntity>> ToList<TEntity>(IQueryable<TEntity> query)
-        where TEntity : BaseEntity
     {
         return await query.ToListAsync();
     }

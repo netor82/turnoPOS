@@ -143,6 +143,14 @@ select {
     text-align: right;
 }
 
+.sold-items tr td:nth-child(2){
+    text-align: center;
+}
+
+.sold-items tr td:nth-child(3) {
+    text-align: right;
+}
+
 @media (prefers-color-scheme: light) {
     :root {
         color: #213547;

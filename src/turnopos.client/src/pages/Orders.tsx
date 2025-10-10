@@ -2,10 +2,12 @@
 import type Order from '../models/Order';
 import orderService from '../services/OrderService';
 import { formatDate, formatCurrency } from '../utils/Formatter';
+import SoldItems from '../components/order/SoldItems';
 
 const Orders: React.FC = () => {
     const [orders, setOrders] = useState<Order[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
+    const [showItemsSold, setShowItemsSold] = useState<boolean>(false);
 
     const STATUS_CANCELLED = 2;
 
@@ -60,6 +62,7 @@ const Orders: React.FC = () => {
                     </li>
                 )}
             </ol>
+            {showItemsSold ? <SoldItems /> : <button onClick={() => setShowItemsSold(true)}>Ver resumen de Items vendidos</button>}
         </>
 
     return loading ? 'Cargando...' : listOfOrders;

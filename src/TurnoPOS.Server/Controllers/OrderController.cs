@@ -6,7 +6,7 @@ namespace TurnoPOS.Server.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class OrderController(IOrderService orderService, IThermalPrinterService printer) : ControllerBase
+    public class OrderController(IOrderService orderService) : ControllerBase
     {
         // Create a new order
         [HttpPost]
@@ -32,6 +32,13 @@ namespace TurnoPOS.Server.Controllers
         {
             var orders = await orderService.GetAll();
             return Ok(orders);
+        }
+
+        [HttpGet("itemsSold")]
+        public async Task<IActionResult> GetItemsSold()
+        {
+            var result = await orderService.GetItemsSold();
+            return Ok(result);
         }
 
         // Cancel an order

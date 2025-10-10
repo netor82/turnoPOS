@@ -1,5 +1,6 @@
 import axios from 'axios';
 import type Order from '../models/Order';
+import type ItemSold from '../models/ItemSold';
 
 const API_BASE_URL = '/api/order';
 
@@ -10,6 +11,15 @@ class OrderService {
      */
     static async getAll(): Promise<Order[]> {
         const response = await axios.get<Order[]>(API_BASE_URL);
+        return response.data;
+    }
+
+    /**
+     * Get items from confirmed orders
+     * @returns Promise<ItemSold[]>
+     */
+    static async getItemsSold(): Promise<ItemSold[]> {
+        const response = await axios.get<ItemSold[]>(`${API_BASE_URL}/itemsSold`);
         return response.data;
     }
 

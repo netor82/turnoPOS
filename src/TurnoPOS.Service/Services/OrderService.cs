@@ -5,24 +5,24 @@ using TurnoPOS.Service.Model;
 
 namespace TurnoPOS.Service.Services;
 
-public class OrderService(IGenericRepository genericRepository, IThermalPrinterService printer) : IOrderService
+public class OrderService(IGenericRepository repository, IThermalPrinterService printer) : IOrderService
 {
     public async Task<Order> Create(Order order)
     {
         await UpdateItemStock(order, decrease: true);
         order.Status = OrderStatus.Completed;
-        var result = genericRepository.Insert(order);
+        var result = repository.Insert(order);
 
-        await genericRepository.SaveAsync();
+        await repository.SaveAsync();
         return result;
     }
 
     private async Task UpdateItemStock(Order order, bool decrease)
     {
         List<long> itemIds = [.. order.OrderLines.Select(ol => ol.ItemId).Distinct()];
-        var itemsQuery = genericRepository.Get<Item>(i => itemIds.Contains(i.Id));
+        var itemsQuery = repository.Get<Item>(i => itemIds.Contains(i.Id));
 
-        var items = (await genericRepository.ToList(itemsQuery))
+        var items = (await repository.ToList(itemsQuery))
             .ToDictionary(x => x.Id);
 
         foreach (var orderLine in order.OrderLines)
@@ -30,7 +30,7 @@ public class OrderService(IGenericRepository genericRepository, IThermalPrinterS
             if (items.TryGetValue(orderLine.ItemId, out var item))
             {
                 item.Stock += (decrease ? -orderLine.Quantity : orderLine.Quantity);
-                genericRepository.Update(item);
+                repository.Update(item);
             }
             else
             {
@@ -41,35 +41,54 @@ public class OrderService(IGenericRepository genericRepository, IThermalPrinterS
 
     public async Task<Order?> GetById(int id)
     {
-        var query = genericRepository.Get<Order>(
+        var query = repository.Get<Order>(
             x => x.Id == id,
             $"{nameof(Order.OrderLines)}.{nameof(OrderLine.Item)}");
 
-        return (await genericRepository.ToList(query))
+        return (await repository.ToList(query))
             .FirstOrDefault();
     }
 
     private async Task<Order> Get(int id, bool withItems = false)
     {
-        var query = genericRepository.Get<Order>(x => x.Id == id,
+        var query = repository.Get<Order>(x => x.Id == id,
             withItems
             ? $"{nameof(Order.OrderLines)}.{nameof(OrderLine.Item)}.{nameof(Item.Department)}"
             : nameof(Order.OrderLines));
-        return await genericRepository.FirstOrDefault(query)
+        return await repository.FirstOrDefault(query)
             ?? throw new KeyNotFoundException($"Item with id {id} not found.");
     }
     public async Task<IList<Order>> GetAll()
     {
-        var query = genericRepository.Get<Order>(orderBy: x => x.OrderByDescending(y => y.CreatedAt));
-        return await genericRepository.ToList(query);
+        var query = repository.Get<Order>(orderBy: x => x.OrderByDescending(y => y.CreatedAt));
+        return await repository.ToList(query);
+    }
+
+    public async Task<List<ItemSold>> GetItemsSold()
+    {
+        var query = repository.Query<OrderLine>()
+            .Where(ol => ol.Order.Status == OrderStatus.Completed)
+            .GroupBy(ol => ol.Item)
+            .Select(g => new ItemSold
+            {
+                Id = g.Key.Id,
+                Name = g.Key.Name,
+                Quantity = g.Sum(ol => ol.Quantity),
+                Total = g.Sum(ol => ol.Price * ol.Quantity)
+            })
+            .OrderBy(iS => iS.Name);
+
+        var items = await repository.ToList(query);
+
+        return items;
     }
     public async Task Cancel(int id)
     {
         var order = await Get(id);
         order.Status = OrderStatus.Cancelled;
-        genericRepository.Update(order);
+        repository.Update(order);
         await UpdateItemStock(order, decrease: false);
-        await genericRepository.SaveAsync();
+        await repository.SaveAsync();
     }
 
     public async Task Print(int id)
