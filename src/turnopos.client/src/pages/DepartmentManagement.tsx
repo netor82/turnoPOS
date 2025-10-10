@@ -49,7 +49,7 @@ const DepartmentManagement: React.FC<DepartmentManagementProps> = ({ onChange })
     ) : (
         <ul>
             {departments.map((dept) => (
-                <li><EditDepartment entity={dept} onChanged={handleOnChange} /></li>
+                <li key={dept.id}><EditDepartment entity={dept} onChanged={handleOnChange} /></li>
             ))}
         </ul>
     )

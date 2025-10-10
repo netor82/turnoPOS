@@ -19,6 +19,9 @@
 .strike {
     text-decoration: line-through;
 }
+.space-top {
+    margin-top:50px;
+}
 
 a {
     font-weight: 500;

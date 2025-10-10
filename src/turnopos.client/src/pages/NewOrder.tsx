@@ -18,6 +18,7 @@ const NewOrder: React.FC = () => {
     const [item, setItem] = useState<Item | undefined>();
     const [quantity, setQuantity] = useState(0);
     const [orderId, setOrderId] = useState<number | null>(null);
+    const [amountReceived, setAmountReceived] = useState<number>(0);
 
     useEffect(() => {
         inventoryService.getAll(null, false)
@@ -42,7 +43,7 @@ const NewOrder: React.FC = () => {
     }
 
     const handleSave = () => {
-        orderService.create({ orderLines, total: calculateTotal(), status: 1 })
+        orderService.create({ orderLines, total: totalAmount, status: 1 })
             .then(data => {
                 setOrderId(data.id);
                 setStatus(STATUS_VIEW_ORDER);
@@ -92,6 +93,14 @@ const NewOrder: React.FC = () => {
         }
     };
 
+    const handlePrint = () => {
+        if (orderId) {
+            orderService
+                .print(orderId)
+                .catch(e => console.error(e));
+        }
+    }
+
     const reset = () => {
         setOrderLines([]);
         setStatus(STATUS_SELECT_ITEM);
@@ -119,14 +128,14 @@ const NewOrder: React.FC = () => {
             </div>
         </form>;
 
-    const cancelForm =
+    const renderCancelForm =
         <div>
             <button onClick={handleCancel}>Cancelar Orden</button>
-            <a href={'./printOrder/' + orderId} target="_blank">🖨️ Imprimir</a>
+            <button onClick={handlePrint}>🖨️ Imprimir</button>
             <button onClick={reset}>Nueva Orden</button>
         </div>;
 
-    const saveForm = status != STATUS_VIEW_ORDER && orderLines.length > 0 ?
+    const renderSaveForm = status != STATUS_VIEW_ORDER && orderLines.length > 0 ?
         <div>
             <button onClick={handleSave}>Guardar Orden</button>
             <button onClick={reset}>Reset</button>
@@ -134,28 +143,40 @@ const NewOrder: React.FC = () => {
 
     const getItem = (id: number) => items.find(i => i.id == id);
 
-    const calculateTotal = () =>
+    const totalAmount =
         orderLines.reduce((previous, current) => previous + current.total, 0);
 
+    const renderCalculateChange = status != STATUS_VIEW_ORDER ? null :
+        <div className="space-top">
+            <hr />
+            <h2>Calculadora de cambio</h2>
+            Monto recibido: <input type="number" step="100" autoFocus min="0" name="recibido" value={amountReceived} onChange={(e) => setAmountReceived(+e.target.value)} />
+            <br />
+            {[1000, 5000, 10000, 15000, 20000].map(x => <button key={x} onClick={() => setAmountReceived(x)}>{formatCurrency(x)}</button>)}
+            <p>
+                Cambio: {formatCurrency(amountReceived - totalAmount)}
+            </p>
+        </div>;
 
     return (
         <div>
             <h1>Nueva Orden</h1>
             {status == STATUS_SELECT_ITEM ? (
                 <ChooseItem items={items} onSelect={handleItemSelected} onCancel={() => { }} />
-            ) : status == STATUS_SET_QUANTITY ? newLineForm : cancelForm}
+            ) : status == STATUS_SET_QUANTITY ? newLineForm : renderCancelForm}
             <div>
                 <h2>Items en la orden</h2>
                 <ul>
                     {orderLines.map((line, idx) => (
                         <li key={idx}>
-                            <button onClick={()=>handleRemoveLine(line)}>❌</button>
+                            {status != STATUS_VIEW_ORDER ? <button onClick={() => handleRemoveLine(line)}>❌</button> : null}
                             {getItem(line.itemId)?.name} - {line.quantity} x {formatCurrency(line.price)} = {formatCurrency(line.total)}</li>
                     ))}
                 </ul>
-                <strong>Total: </strong>{formatCurrency(calculateTotal())}
+                <strong>Total: </strong>{formatCurrency(totalAmount)}
             </div>
-            {saveForm}
+            {renderSaveForm}
+            {renderCalculateChange}
         </div>
     );
 };
