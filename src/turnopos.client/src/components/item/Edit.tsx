@@ -7,6 +7,8 @@ import SelectFromArray from '../SelectFromArray';
 import { formatCurrency, formatNumber } from '../../utils/Formatter'
 
 const EditItem: React.FC<EntityProps<Item>> = ({ entity, onSave, onCancel }) => {
+    const itemForPrint = (item: Item) => `${item.name} ${formatCurrency(item.price || 0)}`;
+
     const [item, setItem] = useState<Item>(entity);
     const [editMode, setEditMode] = useState<boolean>(false);
     const [name, setName] = useState(entity.name || '');
@@ -15,6 +17,7 @@ const EditItem: React.FC<EntityProps<Item>> = ({ entity, onSave, onCancel }) => 
     const [stock, setStock] = useState(entity.stock || 0);
     const [departmentId, setDepartmentId] = useState(entity.departmentId);
     const departments = useContext(DepartmentContext);
+    const [printText, setPrintText] = useState<string>(itemForPrint(item));
 
     const handleSave = async () => {
         const newValue: Item = { ...item, name, description, price, stock, departmentId };
@@ -22,6 +25,7 @@ const EditItem: React.FC<EntityProps<Item>> = ({ entity, onSave, onCancel }) => 
             .then(() => {
                 console.log('new value', newValue);
                 setItem(newValue);
+                setPrintText(itemForPrint(newValue));
                 if (onSave) onSave(newValue);
             })
             .catch((e) => console.error(e));
@@ -33,6 +37,11 @@ const EditItem: React.FC<EntityProps<Item>> = ({ entity, onSave, onCancel }) => 
         setEditMode(false);
         if (onCancel) onCancel(item.id);
     };
+
+    const handlePrintLabel = () => {
+        inventoryService.printVertical(printText)
+            .catch(e => console.error('Error al enviar a imprimir: ' + e.message));
+    }
 
     const reset = () => {
         setName(item.name);
@@ -125,6 +134,12 @@ const EditItem: React.FC<EntityProps<Item>> = ({ entity, onSave, onCancel }) => 
                 <li>De venta en: {getDepartmentName()}</li>
                 <li>Descripción: {item.description}</li>
             </ul>
+            <div>
+                <input type="text" value={printText} onChange={(e) => setPrintText(e.target.value)} placeholder="Texto para imprimir" />
+                <button onClick={() => handlePrintLabel()}>
+                    🖨️ Imprimir etiqueta
+                </button>
+            </div>
         </p>
     );
 

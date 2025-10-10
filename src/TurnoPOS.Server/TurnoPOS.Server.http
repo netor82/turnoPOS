@@ -1,4 +1,4 @@
-@TurnoPOS.Server_HostAddress = http://localhost:5248/api
+﻿@TurnoPOS.Server_HostAddress = http://localhost:5248/api
 
 POST {{TurnoPOS.Server_HostAddress}}/Department
 Content-Type: application/json
@@ -40,6 +40,11 @@ Accept: application/json
 
 ###
 
+
+GET {{TurnoPOS.Server_HostAddress}}/Inventory/printVertical/Cé₡g8
+Accept: application/json
+
+###
 
 GET {{TurnoPOS.Server_HostAddress}}/Order
 Accept: application/json

@@ -10,14 +10,19 @@ namespace TurnoPOS.Service.Services;
 public class ThermalPrinterService() : IThermalPrinterService
 {
     private IEnumerator<PrintLine>? lines;
+    private string textToPrint = string.Empty;
+
+    private const string printerName = "80 Printer Series";
 
     private static readonly Font normalFont = new("Verdana", 10);
     private static readonly Font headerFont = new("Verdana", 12, FontStyle.Bold);
     private static readonly Font tableFont = new("Verdana", 8);
     private static readonly Font tableHeaderFont = new("Verdana", 8, FontStyle.Bold);
+    private static readonly Font verticalFont = new("Verdana", 170);
     private static readonly StringFormat formatRight = new() { Alignment = StringAlignment.Far };
     private static readonly StringFormat formatCenter = new() { Alignment = StringAlignment.Center };
     private static readonly StringFormat formatDefault = new();
+    private static readonly StringFormat formatVertical = new() { FormatFlags = StringFormatFlags.DirectionVertical };
     private const int dotsPerLine = 290;
     private const int gap = 5;
     private const int column2Start = (int)(dotsPerLine * 0.56); // 55% - 12% - 12%
@@ -32,13 +37,13 @@ public class ThermalPrinterService() : IThermalPrinterService
         {
             DocumentName = "TurnoPOS Receipt",
             DefaultPageSettings = { Margins = new Margins(0, 0, 0, 0) },
-            PrinterSettings = { PrinterName = "80 Printer Series", Copies = 1 }
+            PrinterSettings = { PrinterName = printerName, Copies = 1 }
         };
-        pd.PrintPage += new PrintPageEventHandler(Pd_PrintPage);
+        pd.PrintPage += new PrintPageEventHandler(Pd_Print);
         pd.Print();
     }
 
-    private void Pd_PrintPage(object sender, PrintPageEventArgs e)
+    private void Pd_Print(object sender, PrintPageEventArgs e)
     {
         if (lines == null || e.Graphics == null)
         {
@@ -121,5 +126,25 @@ public class ThermalPrinterService() : IThermalPrinterService
                 yPos += fontHeight;
             }
         }
+    }
+
+    public void PrintVertical(string text)
+    {
+        textToPrint = text.Trim();
+
+        PrintDocument pd = new()
+        {
+            DocumentName = "TurnoPOS Label",
+            DefaultPageSettings = { Margins = new Margins(0, 0, 0, 0) },
+            PrinterSettings = { PrinterName = printerName, Copies = 1 }
+        };
+        pd.PrintPage += new PrintPageEventHandler(Pd_PrintVertical);
+        pd.Print();
+    }
+
+    private void Pd_PrintVertical(object sender, PrintPageEventArgs e)
+    {
+        Console.Write("Printing vertical: " + textToPrint);
+        e.Graphics.DrawString(textToPrint, verticalFont, Brushes.Black, 0, 0, formatVertical);
     }
 }

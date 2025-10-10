@@ -7,7 +7,9 @@ namespace TurnoPOS.Server.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class InventoryController(IInventoryService inventoryService, ILogger<InventoryController> logger) : ControllerBase
+    public class InventoryController(IInventoryService inventoryService,
+        IThermalPrinterService printer,
+        ILogger<InventoryController> logger) : ControllerBase
     {
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Item>>> GetAll([FromQuery] int? parentId, [FromQuery] bool includeAll = false)
@@ -74,6 +76,13 @@ namespace TurnoPOS.Server.Controllers
             if (updated == null)
                 return NotFound();
             return Ok(updated);
+        }
+
+        [HttpGet("printVertical/{text}")]
+        public ActionResult PrintVertical(string text)
+        {
+            printer.PrintVertical(text);
+            return NoContent();
         }
     }
 }

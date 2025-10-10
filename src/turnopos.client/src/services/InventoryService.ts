@@ -34,6 +34,11 @@ class InventoryService {
     static async delete(id: number): Promise<void> {
         await axios.delete(`${API_BASE_URL}/${id}`);
     }
+
+    static async printVertical(text: string): Promise<boolean> {
+        await axios.get(`${API_BASE_URL}/printVertical/${text}`);
+        return true;
+    }
 }
 
 export default InventoryService;
