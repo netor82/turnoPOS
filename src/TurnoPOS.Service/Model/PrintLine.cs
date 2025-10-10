@@ -11,6 +11,7 @@ public enum PrintLineType
     Text,
     BlankLine,
     Header,
+    FootNote,
 
     TableHeader1,
     TableHeader2,

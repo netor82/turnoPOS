@@ -1,4 +1,5 @@
 using TurnoPOS.Service;
+using TurnoPOS.Service.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,6 +10,7 @@ builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 
 builder.Services.ConfigureServices(builder.Configuration);
+builder.Services.Configure<TurnoOptions>(builder.Configuration.GetSection(nameof(TurnoOptions)));
 var app = builder.Build();
 
 app.UseDefaultFiles();

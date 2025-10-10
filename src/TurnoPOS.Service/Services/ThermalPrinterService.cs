@@ -1,22 +1,22 @@
-﻿using System.Drawing;
+﻿using Microsoft.Extensions.Options;
+using System.Drawing;
 using System.Drawing.Printing;
 using System.Runtime.Versioning;
+using TurnoPOS.Service.Configuration;
 using TurnoPOS.Service.Interfaces;
 using TurnoPOS.Service.Model;
 
 namespace TurnoPOS.Service.Services;
 
 [SupportedOSPlatform("windows6.1")]
-public class ThermalPrinterService() : IThermalPrinterService
+public class ThermalPrinterService(IOptions<TurnoOptions> options) : IThermalPrinterService
 {
     private IEnumerator<PrintLine>? lines;
     private string textToPrint = string.Empty;
 
-    private const string printerName = "80 Printer Series";
-
     private static readonly Font normalFont = new("Verdana", 10);
     private static readonly Font headerFont = new("Verdana", 12, FontStyle.Bold);
-    private static readonly Font tableFont = new("Verdana", 8);
+    private static readonly Font smallerFont = new("Verdana", 8);
     private static readonly Font tableHeaderFont = new("Verdana", 8, FontStyle.Bold);
     private static readonly Font verticalFont = new("Verdana", 170);
     private static readonly StringFormat formatRight = new() { Alignment = StringAlignment.Far };
@@ -37,7 +37,7 @@ public class ThermalPrinterService() : IThermalPrinterService
         {
             DocumentName = "TurnoPOS Receipt",
             DefaultPageSettings = { Margins = new Margins(0, 0, 0, 0) },
-            PrinterSettings = { PrinterName = printerName, Copies = 1 }
+            PrinterSettings = { PrinterName = options.Value.PrinterName, Copies = 1 }
         };
         pd.PrintPage += new PrintPageEventHandler(Pd_Print);
         pd.Print();
@@ -83,14 +83,19 @@ public class ThermalPrinterService() : IThermalPrinterService
                     fontHeight = tableHeaderFontHeight;
                     break;
                 case PrintLineType.TableColumn1:
-                    font = tableFont;
+                    font = smallerFont;
                     format = formatDefault;
                     fontHeight = tableHeaderFontHeight;
                     break;
                 case PrintLineType.TableColumn2 or PrintLineType.TableColumn3:
-                    font = tableFont;
+                    font = smallerFont;
                     format = formatRight;
                     fontHeight = tableHeaderFontHeight;
+                    break;
+                case PrintLineType.FootNote:
+                    font = smallerFont;
+                    format = formatCenter;
+                    fontHeight = normalFontHeight;
                     break;
                 default:
                     font = normalFont;
@@ -136,7 +141,7 @@ public class ThermalPrinterService() : IThermalPrinterService
         {
             DocumentName = "TurnoPOS Label",
             DefaultPageSettings = { Margins = new Margins(0, 0, 0, 0) },
-            PrinterSettings = { PrinterName = printerName, Copies = 1 }
+            PrinterSettings = { PrinterName = options.Value.PrinterName, Copies = 1 }
         };
         pd.PrintPage += new PrintPageEventHandler(Pd_PrintVertical);
         pd.Print();

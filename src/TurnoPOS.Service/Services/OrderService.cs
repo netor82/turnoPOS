@@ -1,11 +1,15 @@
-﻿using TurnoPOS.Data.Models;
+﻿using Microsoft.Extensions.Options;
+using TurnoPOS.Data.Models;
 using TurnoPOS.Data.Repositories;
+using TurnoPOS.Service.Configuration;
 using TurnoPOS.Service.Interfaces;
 using TurnoPOS.Service.Model;
 
 namespace TurnoPOS.Service.Services;
 
-public class OrderService(IGenericRepository repository, IThermalPrinterService printer) : IOrderService
+public class OrderService(IGenericRepository repository,
+    IOptions<TurnoOptions> options,
+    IThermalPrinterService printer) : IOrderService
 {
     public async Task<Order> Create(Order order)
     {
@@ -127,6 +131,8 @@ public class OrderService(IGenericRepository repository, IThermalPrinterService 
         lines.Add(new PrintLine { Type = PrintLineType.BlankLine, Text = "" });
         lines.Add(new PrintLine { Type = PrintLineType.TableHeader2, Text = "Total:" });
         lines.Add(new PrintLine { Type = PrintLineType.TableHeader3, Text = $"₡{totalPrice:N0}" });
+        lines.Add(new PrintLine { Type = PrintLineType.BlankLine, Text = "" });
+        lines.Add(new PrintLine { Type = PrintLineType.FootNote, Text = options.Value.FooterMessage });
 
         printer.Print(lines);
 
