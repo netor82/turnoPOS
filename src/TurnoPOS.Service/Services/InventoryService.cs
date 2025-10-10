@@ -1,13 +1,12 @@
 ﻿using TurnoPOS.Data.Models;
 using TurnoPOS.Data.Repositories;
 using TurnoPOS.Service.Interfaces;
-using TurnoPOS.Service.Model;
 
 namespace TurnoPOS.Service.Services;
 
 public class InventoryService(IGenericRepository repository) : IInventoryService
 {
-    public async Task<IEnumerable<ItemDTO>> GetAll(int? parentId, bool includeAll = false)
+    public async Task<IEnumerable<Item>> GetAll(int? parentId, bool includeAll = false)
     {
         var query = repository.Get<Item>(
             i => 
@@ -20,7 +19,7 @@ public class InventoryService(IGenericRepository repository) : IInventoryService
                 )
                 && (includeAll || i.IsActive),
             i => i.OrderBy(x => x.IsDirectory));
-        return (await repository.ToList(query)).Select(ItemDTO.FromEntity);
+        return await repository.ToList(query);
     }
     public async Task<Item> GetById(int id)
     {
