@@ -112,7 +112,7 @@ const InventoryManagement: React.FC = () => {
 
     const renderMoveToButton =
         !item.id || isMoving ? null :
-            (<p className=""><hr /><button onClick={() => setIsMoving(true)}>↗️ Mover a otro lugar</button></p>);
+            (<><hr /><p className=""><button onClick={() => setIsMoving(true)}>↗️ Mover a otro lugar</button></p></>);
 
     const renderItem =
         loading ? <p>Cargando...</p> :
@@ -156,7 +156,7 @@ const InventoryManagement: React.FC = () => {
 
     const renderInventorySummary = showSummary ?
         <InventorySummary items={moveToItems} /> :
-        <p><hr/><button onClick={() => setShowSummary(true)}>Ver Resumen</button></p>;
+        <><hr /><p><button onClick={() => setShowSummary(true)}>Ver Resumen</button></p></>;
 
     return (
         <div>
