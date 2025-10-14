@@ -1,5 +1,6 @@
 ﻿import React, { useState } from 'react';
 import type Item from '../../models/Item';
+import { formatCurrency } from '../../utils/Formatter'
 
 export interface ChooseItemProps {
     items: Item[];
@@ -69,9 +70,10 @@ const ChooseItem: React.FC<ChooseItemProps> = ({ items, onSelect, onCancel, sele
     const renderItemButton = (child: Item, index: number) =>
         <button key={child.id} onClick={() => handleSelectItem(child)}
             disabled={!child.isActive || (selectDirectory && !child.isDirectory)}>
-                <span className="item-picker-number">{index + 1}</span>
-                <span className={'item-name' + (!child.isDirectory && !child.stock && ' strike' || '')}>{child.name}</span>
-                <span className="item-picker-stock">{child.isDirectory ? '📁' : child.stock}</span>
+            <span className="item-picker-number">{index + 1}</span>
+            <span className={'item-name' + (!child.isDirectory && !child.stock && ' strike' || '')}>{child.name}</span>
+            {selectDirectory || child.isDirectory || <div className="new-line">{formatCurrency(child.price || 0)}</div>}
+            <span className="item-picker-stock">{child.isDirectory ? '📁' : child.stock}</span>
         </button>;
 
     const renderSelectDiretoryButton =
