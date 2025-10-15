@@ -5,4 +5,7 @@ export default interface Order {
     total: number;
     createdAt?: Date;
     status: number;
+    paymentType: number;
 }
+
+export const PaymentTypes = ['Efectivo', 'Tarjeta', 'Transferencia', 'Sinpe', 'Otro'];

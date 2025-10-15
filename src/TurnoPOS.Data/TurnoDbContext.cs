@@ -12,7 +12,10 @@ public class TurnoDbContext(DbContextOptions<TurnoDbContext> options) : DbContex
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        
+        modelBuilder.Entity<Order>()
+            .Property(o => o.PaymentType)
+            .HasDefaultValue(PaymentType.Cash)
+            .HasSentinel(0);
     }
 
     public DbSet<Order> Orders { get; set; }

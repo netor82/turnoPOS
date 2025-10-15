@@ -1,6 +1,7 @@
 ﻿import React, { useEffect, useState } from 'react';
 import type OrderLine from '../models/OrderLine';
 import type Item from '../models/Item';
+import { PaymentTypes } from '../models/Order';
 import inventoryService from '../services/InventoryService';
 import orderService from '../services/OrderService';
 import ChooseItem from '../components/order/ChooseItem';
@@ -17,6 +18,7 @@ const NewOrder: React.FC = () => {
     const [status, setStatus] = useState(STATUS_SELECT_ITEM);
     const [item, setItem] = useState<Item | undefined>();
     const [quantity, setQuantity] = useState(0);
+    const [paymentType, setPaymentType] = useState(1);
     const [orderId, setOrderId] = useState<number | null>(null);
     const [amountReceived, setAmountReceived] = useState<number>(0);
 
@@ -43,7 +45,7 @@ const NewOrder: React.FC = () => {
     }
 
     const handleSave = () => {
-        orderService.create({ orderLines, total: totalAmount, status: 1 })
+        orderService.create({ orderLines, total: totalAmount, status: 1, paymentType })
             .then(data => {
                 setOrderId(data.id);
                 setStatus(STATUS_VIEW_ORDER);
@@ -173,7 +175,12 @@ const NewOrder: React.FC = () => {
                             {getItem(line.itemId)?.name} - {line.quantity} x {formatCurrency(line.price)} = {formatCurrency(line.total)}</li>
                     ))}
                 </ul>
-                <strong>Total: </strong>{formatCurrency(totalAmount)}
+                <p>Total: <strong>{formatCurrency(totalAmount)}</strong></p>
+                <p>
+                    <select value={paymentType} onChange={(e) => setPaymentType(+e.target.value)}>
+                        {PaymentTypes.map((v, inx) => <option key={inx} value={inx + 1}>{v}</option>)}
+                    </select>
+                </p>
             </div>
             {renderSaveForm}
             {renderCalculateChange}

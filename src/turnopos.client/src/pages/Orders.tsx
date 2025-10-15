@@ -1,5 +1,6 @@
 ﻿import React, { useEffect, useState } from 'react';
 import type Order from '../models/Order';
+import { PaymentTypes } from '../models/Order';
 import orderService from '../services/OrderService';
 import { formatDate, formatCurrency } from '../utils/Formatter';
 import SoldItems from '../components/order/SoldItems';
@@ -55,7 +56,7 @@ const Orders: React.FC = () => {
             <ol>
                 {orders.map(order =>
                     <li key={order.id} className={order.status == STATUS_CANCELLED ? 'strike' : ''}>
-                        Orden: {order.id} del {formatDate(order.createdAt)}. Total: {formatCurrency(order.total)}
+                        Orden: {order.id} del {formatDate(order.createdAt)}. Total: {formatCurrency(order.total)} - {PaymentTypes[order.paymentType-1]}&nbsp;
                         {order.status != STATUS_CANCELLED ? <button onClick={() => handleCancel(order.id)}>❌ Cancelar</button> : null}
                         {order.status != STATUS_CANCELLED ? <button onClick={() => handlePrint(order.id)}>🖨️ Imprimir</button> : null}
                         <a href={'./printOrder/' + order.id} target="_blank">🕶️ Ver</a>

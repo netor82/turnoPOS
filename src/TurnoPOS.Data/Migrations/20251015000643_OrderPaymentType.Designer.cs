@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TurnoPOS.Data;
 
@@ -10,9 +11,11 @@ using TurnoPOS.Data;
 namespace TurnoPOS.Data.Migrations
 {
     [DbContext(typeof(TurnoDbContext))]
-    partial class TurnoDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251015000643_OrderPaymentType")]
+    partial class OrderPaymentType
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "9.0.9");

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import type ItemSold from '../../models/ItemSold'
+import type ItemSold from '../../models/ItemSold';
 import orderService from '../../services/OrderService';
 import {formatNumber, formatCurrency} from '../../utils/Formatter';
 
