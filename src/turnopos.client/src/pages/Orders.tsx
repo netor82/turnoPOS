@@ -26,6 +26,7 @@ const Orders: React.FC = () => {
         orderService.getAll(orderDates[index])
             .then(data => {
                 setOrders(data);
+                setShowItemsSold(false);
             })
             .catch(e => console.error(e))
             .finally(() => setLoading(false));
@@ -128,7 +129,7 @@ const Orders: React.FC = () => {
             </p>
 
             {showGroupedByType ? renderOrdersByType() : renderOrders(orders)}
-            {showItemsSold ? <SoldItems /> : <button onClick={() => setShowItemsSold(true)}>Ver resumen de Items vendidos</button>}
+            {showItemsSold ? <SoldItems date={orderDates[orderDateIndex]} /> : <button onClick={() => setShowItemsSold(true)}>Ver resumen de Items vendidos</button>}
         </>;
 
     return <>

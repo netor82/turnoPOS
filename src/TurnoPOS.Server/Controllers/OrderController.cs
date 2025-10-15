@@ -36,9 +36,9 @@ namespace TurnoPOS.Server.Controllers
         }
 
         [HttpGet("itemsSold")]
-        public async Task<IActionResult> GetItemsSold()
+        public async Task<IActionResult> GetItemsSold([FromQuery] DateTime? date)
         {
-            var result = await orderService.GetItemsSold();
+            var result = await orderService.GetItemsSold(date);
             return Ok(result);
         }
 

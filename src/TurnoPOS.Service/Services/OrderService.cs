@@ -69,10 +69,12 @@ public class OrderService(IGenericRepository repository,
         return await repository.ToList(query);
     }
 
-    public async Task<List<ItemSold>> GetItemsSold()
+    public async Task<List<ItemSold>> GetItemsSold(DateTime? date)
     {
         var query = repository.Query<OrderLine>()
-            .Where(ol => ol.Order.Status == OrderStatus.Completed)
+            .Where(ol =>
+                ol.Order.Status == OrderStatus.Completed
+                && (!date.HasValue || ol.Order.CreatedAt.Date == date.Value.Date))
             .GroupBy(ol => ol.Item)
             .Select(g => new ItemSold
             {

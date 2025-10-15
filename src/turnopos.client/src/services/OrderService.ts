@@ -23,8 +23,8 @@ class OrderService {
      * Get items from confirmed orders
      * @returns Promise<ItemSold[]>
      */
-    static async getItemsSold(): Promise<ItemSold[]> {
-        const response = await axios.get<ItemSold[]>(`${API_BASE_URL}/itemsSold`);
+    static async getItemsSold(date:Date): Promise<ItemSold[]> {
+        const response = await axios.get<ItemSold[]>(`${API_BASE_URL}/itemsSold?date=${date}`);
         return response.data;
     }
 

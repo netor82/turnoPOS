@@ -240,4 +240,4 @@ Adoreal.Api/Logs/
 src/*.Api/watchlogs-log.db
 src/*.Api/watchlogs.db
 .DS_Store
-/src/TurnoPOS.Server/turnopos.db
+/src/TurnoPOS.Server/turnopos.db*

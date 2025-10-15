@@ -3,7 +3,11 @@ import type ItemSold from '../../models/ItemSold';
 import orderService from '../../services/OrderService';
 import {formatNumber, formatCurrency} from '../../utils/Formatter';
 
-const SoldItems: React.FC = () => {
+export interface SoldItemsProps {
+    date: Date
+}
+
+const SoldItems: React.FC<SoldItemsProps> = ({ date }) => {
     const [items, setItems] = useState<ItemSold[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
 
@@ -13,7 +17,7 @@ const SoldItems: React.FC = () => {
 
     const fetchSoldItems = () => {
         setLoading(true);
-        orderService.getItemsSold()
+        orderService.getItemsSold(date)
             .then(data => {
                 setItems(data);
             })
