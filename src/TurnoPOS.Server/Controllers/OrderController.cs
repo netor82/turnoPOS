@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using TurnoPOS.Service.Interfaces;
 using TurnoPOS.Data.Models;
+using System.ComponentModel.DataAnnotations;
 
 namespace TurnoPOS.Server.Controllers
 {
@@ -28,9 +29,9 @@ namespace TurnoPOS.Server.Controllers
 
         // Get all orders
         [HttpGet]
-        public async Task<ActionResult<IList<Order>>> GetAll()
+        public async Task<ActionResult<IList<Order>>> GetAll([Required, FromQuery] DateTime date)
         {
-            var orders = await orderService.GetAll();
+            var orders = await orderService.GetAll(date);
             return Ok(orders);
         }
 
@@ -38,6 +39,13 @@ namespace TurnoPOS.Server.Controllers
         public async Task<IActionResult> GetItemsSold()
         {
             var result = await orderService.GetItemsSold();
+            return Ok(result);
+        }
+
+        [HttpGet("dates")]
+        public async Task<IActionResult> GetOrderDates()
+        {
+            var result = await orderService.GetOrderDates();
             return Ok(result);
         }
 

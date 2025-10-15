@@ -6,6 +6,8 @@ import { formatDate, formatCurrency } from '../utils/Formatter';
 import SoldItems from '../components/order/SoldItems';
 
 const Orders: React.FC = () => {
+    const [orderDates, setOrderDates] = useState<Date[]>([]);
+    const [orderDateIndex, setOrderDateIndex] = useState(-1);
     const [orders, setOrders] = useState<Order[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [showItemsSold, setShowItemsSold] = useState<boolean>(false);
@@ -16,6 +18,18 @@ const Orders: React.FC = () => {
     useEffect(() => {
         fetchOrders();
     }, []);
+
+    const handleOrderDateIndexChange = (index: number) => {
+        setLoading(true);
+        setOrderDateIndex(index);
+        console.log('New order date index: ', index)
+        orderService.getAll(orderDates[index])
+            .then(data => {
+                setOrders(data);
+            })
+            .catch(e => console.error(e))
+            .finally(() => setLoading(false));
+    }
 
     const handleCancel = (id: number) => {
         if (id) {
@@ -41,7 +55,17 @@ const Orders: React.FC = () => {
 
     const fetchOrders = () => {
         setLoading(true);
-        orderService.getAll()
+        orderService.getDates()
+            .then(d => {
+                if (d.length) {
+                    setOrderDates(d);
+                    const newIndex = d.length - 1;
+                    setOrderDateIndex(newIndex);
+                    return orderService.getAll(d[newIndex]);
+                } else {
+                    return [];
+                }
+            })
             .then(data => {
                 setOrders(data);
             })
@@ -86,17 +110,32 @@ const Orders: React.FC = () => {
     const calculateTotal = (orders: Order[]) =>
         formatCurrency(orders.reduce((previous, current) => current.status == STATUS_CANCELLED ? previous : previous + current.total, 0));
 
+    const renderDateSelection = (orderDateIndex < 0) ? <span>No hay órdenes</span> :
+        <p>
+            Ventas hechas en &nbsp;
+            {orderDates.length == 1 ? formatDate(orderDates[orderDateIndex], undefined, { dateStyle: 'short' }) :
+                <select value={orderDateIndex} onChange={(e) => handleOrderDateIndexChange(+e.target.value)}>
+                    {orderDates.map((v, idx) => <option key={idx} value={idx}>{formatDate(v, undefined, { dateStyle: 'short' })}</option>)}
+                </select>}
+        </p>;
+
     const listOfOrders = !orders.length ? <p>No existen órdenes.</p> :
         <>
-            <h1>Ventas</h1>
+            {renderDateSelection}
             Total en órdenes (excluye canceladas): <strong>{calculateTotal(orders)}</strong>
-            <p>Si existen órdenes, aparecen las más recientes de primero. <button onClick={handleToggleGroup}>{showGroupedByType ? 'Todas juntas' : 'Por tipo de pago'}</button></p>
+            <p>Si existen órdenes, aparecen las más recientes de primero.
+                <button onClick={handleToggleGroup}>{showGroupedByType ? 'Todas juntas' : 'Por tipo de pago'}</button>
+            </p>
 
             {showGroupedByType ? renderOrdersByType() : renderOrders(orders)}
             {showItemsSold ? <SoldItems /> : <button onClick={() => setShowItemsSold(true)}>Ver resumen de Items vendidos</button>}
-        </>
+        </>;
 
-    return loading ? 'Cargando...' : listOfOrders;
+    return <>
+        <h1>Ventas</h1>
+        {loading ? 'Cargando...' : listOfOrders}
+    </>;
+    
 };
 
 export default Orders;

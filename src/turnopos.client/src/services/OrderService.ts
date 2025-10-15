@@ -9,8 +9,13 @@ class OrderService {
      * Get all orders
      * @returns Promise<Order[]>
      */
-    static async getAll(): Promise<Order[]> {
-        const response = await axios.get<Order[]>(API_BASE_URL);
+    static async getAll(date: Date): Promise<Order[]> {
+        const response = await axios.get<Order[]>(`${API_BASE_URL}/?date=${date}`);
+        return response.data;
+    }
+
+    static async getDates(): Promise<Date[]> {
+        const response = await axios.get<Date[]>(`${API_BASE_URL}/dates`);
         return response.data;
     }
 

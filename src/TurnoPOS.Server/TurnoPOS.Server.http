@@ -46,7 +46,7 @@ Accept: application/json
 
 ###
 
-GET {{TurnoPOS.Server_HostAddress}}/Order
+GET {{TurnoPOS.Server_HostAddress}}/Order?date=2025-10-12
 Accept: application/json
 
 ###
@@ -57,6 +57,11 @@ Accept: application/json
 ###
 
 GET {{TurnoPOS.Server_HostAddress}}/Order/itemsSold
+Accept: application/json
+
+###
+
+GET {{TurnoPOS.Server_HostAddress}}/Order/dates
 Accept: application/json
 
 ###

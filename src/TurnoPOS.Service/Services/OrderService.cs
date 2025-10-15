@@ -62,9 +62,10 @@ public class OrderService(IGenericRepository repository,
         return await repository.FirstOrDefault(query)
             ?? throw new KeyNotFoundException($"Item with id {id} not found.");
     }
-    public async Task<IList<Order>> GetAll()
+    public async Task<IList<Order>> GetAll(DateTime date)
     {
-        var query = repository.Get<Order>(orderBy: x => x.OrderByDescending(y => y.CreatedAt));
+        var query = repository.Get<Order>(x=> x.CreatedAt.Date == date.Date,
+            orderBy: x => x.OrderByDescending(y => y.CreatedAt));
         return await repository.ToList(query);
     }
 
@@ -152,5 +153,16 @@ public class OrderService(IGenericRepository repository,
 
         lines.Clear();
 
+    }
+
+    public async Task<IEnumerable<DateTime>> GetOrderDates()
+    {
+        var query = repository.Query<Order>()
+            .Select(x => x.CreatedAt.Date)
+            .Distinct()
+            .Order();
+
+        var result = await repository.ToList(query);
+        return result;
     }
 }
