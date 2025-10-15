@@ -9,6 +9,7 @@ const Orders: React.FC = () => {
     const [orders, setOrders] = useState<Order[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [showItemsSold, setShowItemsSold] = useState<boolean>(false);
+    const [showGroupedByType, setShowGroupedByType] = useState(false);
 
     const STATUS_CANCELLED = 2;
 
@@ -34,6 +35,10 @@ const Orders: React.FC = () => {
         }
     }
 
+    const handleToggleGroup = () => {
+        setShowGroupedByType(!showGroupedByType);
+    }
+
     const fetchOrders = () => {
         setLoading(true);
         orderService.getAll()
@@ -44,25 +49,50 @@ const Orders: React.FC = () => {
             .finally(() => setLoading(false));
     }
 
-    const calculateTotal = () =>
-        orders.reduce((previous, current) => current.status == STATUS_CANCELLED ? previous : previous + current.total, 0);
+    const renderOrders = (orders: Order[]) =>
+        <ol>
+            {orders.map(order =>
+                <li key={order.id} className={order.status == STATUS_CANCELLED ? 'strike' : ''}>
+                    Orden: {order.id} del {formatDate(order.createdAt)}. Total: {formatCurrency(order.total)} - {PaymentTypes[order.paymentType - 1]}&nbsp;
+                    {order.status != STATUS_CANCELLED ? <button onClick={() => handleCancel(order.id)}>❌ Cancelar</button> : null}
+                    {order.status != STATUS_CANCELLED ? <button onClick={() => handlePrint(order.id)}>🖨️ Imprimir</button> : null}
+                    <a href={'./printOrder/' + order.id} target="_blank">🕶️ Ver</a>
+                </li>
+            )}
+        </ol>;
+
+    const renderOrdersByType = () => {
+        if (!orders.length) return null;
+
+        orders.sort((a, b) => a.paymentType - b.paymentType);
+        const result: React.JSX.Element[] = [];
+        let previousPaymentType = 0;
+
+        for (let index = 0; index < orders.length; index++) {
+            const current = orders[index];
+            if (previousPaymentType != current.paymentType) {
+                previousPaymentType = current.paymentType;
+                const filteredOrders = orders.filter(o => o.paymentType == previousPaymentType);
+
+                result.push(<hr />);
+                result.push(<h3>{PaymentTypes[current.paymentType - 1]}</h3>);
+                result.push(renderOrders(filteredOrders))
+                result.push(<p>Total parcial: {calculateTotal(filteredOrders)}</p>)
+            }
+        }
+        return <>{result}</>;
+    }
+
+    const calculateTotal = (orders: Order[]) =>
+        formatCurrency(orders.reduce((previous, current) => current.status == STATUS_CANCELLED ? previous : previous + current.total, 0));
 
     const listOfOrders = !orders.length ? <p>No existen órdenes.</p> :
         <>
             <h1>Ventas</h1>
-            Total en órdenes (excluye canceladas): <strong>{formatCurrency(calculateTotal())}</strong>
+            Total en órdenes (excluye canceladas): <strong>{calculateTotal(orders)}</strong>
+            <p>Si existen órdenes, aparecen las más recientes de primero. <button onClick={handleToggleGroup}>{showGroupedByType ? 'Todas juntas' : 'Por tipo de pago'}</button></p>
 
-            <p>Si existen órdenes, aparecen las más recientes de primero.</p>
-            <ol>
-                {orders.map(order =>
-                    <li key={order.id} className={order.status == STATUS_CANCELLED ? 'strike' : ''}>
-                        Orden: {order.id} del {formatDate(order.createdAt)}. Total: {formatCurrency(order.total)} - {PaymentTypes[order.paymentType-1]}&nbsp;
-                        {order.status != STATUS_CANCELLED ? <button onClick={() => handleCancel(order.id)}>❌ Cancelar</button> : null}
-                        {order.status != STATUS_CANCELLED ? <button onClick={() => handlePrint(order.id)}>🖨️ Imprimir</button> : null}
-                        <a href={'./printOrder/' + order.id} target="_blank">🕶️ Ver</a>
-                    </li>
-                )}
-            </ol>
+            {showGroupedByType ? renderOrdersByType() : renderOrders(orders)}
             {showItemsSold ? <SoldItems /> : <button onClick={() => setShowItemsSold(true)}>Ver resumen de Items vendidos</button>}
         </>
 
