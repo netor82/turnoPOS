@@ -4,7 +4,7 @@ namespace TurnoPOS.Data.Models;
 
 public class Order : BaseEntity
 {
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTime CreatedAt { get; set; } = DateTime.Now;
     public DateTime? CompletedAt { get; set; }
     public decimal Total { get; set; }
     public OrderStatus Status { get; set; } = OrderStatus.Completed;
