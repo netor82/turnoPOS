@@ -67,6 +67,21 @@ const InventoryManagement: React.FC = () => {
         setItem(newItem);
     }
 
+    const handleItemEdited = (itemEdited: Item) => {
+        const updatedNavigationStack = [...navigationStack];
+        const parentId = itemEdited.parentId || 0;
+        const parent = updatedNavigationStack.find(i => i.id == parentId);
+        if (parent && parent.children) {
+            const index = parent.children.findIndex(i => i.id == itemEdited.id);
+            if (index >= 0) {
+                parent.children[index] = itemEdited;
+            }
+        }
+
+        setItem(itemEdited);
+        setNavigationStack(updatedNavigationStack);
+    }
+
     const handleMoveItem = () => {
         resetMoving();
         if (newParent && newParent.id != item.parentId) {
@@ -118,7 +133,7 @@ const InventoryManagement: React.FC = () => {
         loading ? <p>Cargando...</p> :
             item.isDirectory
                 ? <EditDirectory entity={item} onChanged={(e) => setItem(e)} onSave={(e) => setItem(e)} />
-                : <EditItem entity={item} onChanged={(e) => setItem(e)} onSave={(e) => setItem(e)} />;
+                : <EditItem entity={item} onChanged={handleItemEdited} onSave={handleItemEdited} />;
 
     const renderChildren = () => {
         if (!loading && item.childrenLoaded && item.children) {

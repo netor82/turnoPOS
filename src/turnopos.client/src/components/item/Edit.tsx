@@ -92,7 +92,7 @@ const EditItem: React.FC<EntityProps<Item>> = ({ entity, onSave, onCancel }) => 
                         value={price}
                         onChange={e => setPrice(Number(e.target.value))}
                         min={0}
-                        step={0.01}
+                        step={10}
                     />
                 </div>
                 <div>
