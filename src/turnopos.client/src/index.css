@@ -19,8 +19,9 @@
 .strike {
     text-decoration: line-through;
 }
+
 .space-top {
-    margin-top:50px;
+    margin-top: 50px;
 }
 
 a {
@@ -70,12 +71,14 @@ input, select {
         button:focus-visible {
             outline: 4px auto -webkit-focus-ring-color;
         }
+
         button[disabled] {
             cursor: not-allowed;
         }
-        button[disabled]:hover {
-            border-color: initial;
-        }
+
+            button[disabled]:hover {
+                border-color: initial;
+            }
 
 ul {
     list-style-type: none;
@@ -90,6 +93,17 @@ nav li {
 select {
     min-width: 205px;
 }
+
+.responsive-columns {
+    display: flex;
+    flex-direction: row;
+}
+
+    .responsive-columns .column:nth-child(2) {
+        margin-left: 20px;
+        padding-left: 20px;
+        border-left: solid 1px;
+    }
 
 .edit-item {
     padding: 5px;
@@ -146,7 +160,7 @@ select {
     text-align: right;
 }
 
-.sold-items tr td:nth-child(2){
+.sold-items tr td:nth-child(2) {
     text-align: center;
 }
 
@@ -167,6 +181,18 @@ select {
     button, input[type=button] {
         background-color: #ece9e9;
     }
+}
+
+@media (max-width: 620px) {
+    .responsive-columns {
+        flex-direction: column;
+    }
+
+        .responsive-columns .column:nth-child(2) {
+            margin-left: 0;
+            padding-left: 0px;
+            border-left: none;
+        }
 }
 
 @media print {

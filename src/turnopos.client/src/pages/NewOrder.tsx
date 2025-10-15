@@ -139,6 +139,11 @@ const NewOrder: React.FC = () => {
 
     const renderSaveForm = status != STATUS_VIEW_ORDER && orderLines.length > 0 ?
         <div>
+            <p>
+                <select value={paymentType} onChange={(e) => setPaymentType(+e.target.value)}>
+                    {PaymentTypes.map((v, inx) => <option key={inx} value={inx + 1}>{v}</option>)}
+                </select>
+            </p>
             <button onClick={handleSave}>Guardar Orden</button>
             <button onClick={reset}>Reset</button>
         </div> : null;
@@ -163,27 +168,26 @@ const NewOrder: React.FC = () => {
     return (
         <div>
             <h1>Nueva Orden</h1>
-            {status == STATUS_SELECT_ITEM ? (
-                <ChooseItem items={items} onSelect={handleItemSelected} onCancel={() => { }} />
-            ) : status == STATUS_SET_QUANTITY ? newLineForm : renderCancelForm}
-            <div>
-                <h2>Items en la orden</h2>
-                <ul>
-                    {orderLines.map((line, idx) => (
-                        <li key={idx}>
-                            {status != STATUS_VIEW_ORDER ? <button onClick={() => handleRemoveLine(line)}>❌</button> : null}
-                            {getItem(line.itemId)?.name} - {line.quantity} x {formatCurrency(line.price)} = {formatCurrency(line.total)}</li>
-                    ))}
-                </ul>
-                <p>Total: <strong>{formatCurrency(totalAmount)}</strong></p>
-                <p>
-                    <select value={paymentType} onChange={(e) => setPaymentType(+e.target.value)}>
-                        {PaymentTypes.map((v, inx) => <option key={inx} value={inx + 1}>{v}</option>)}
-                    </select>
-                </p>
+            <div className="responsive-columns">
+                <div className="column">
+                    {status == STATUS_SELECT_ITEM ? (
+                        <ChooseItem items={items} onSelect={handleItemSelected} onCancel={() => { }} />
+                    ) : status == STATUS_SET_QUANTITY ? newLineForm : renderCancelForm}
+                </div>
+                <div className="column">
+                    <h2>Items en la orden</h2>
+                    <ul>
+                        {orderLines.map((line, idx) => (
+                            <li key={idx}>
+                                {status != STATUS_VIEW_ORDER ? <button onClick={() => handleRemoveLine(line)}>❌</button> : null}
+                                {getItem(line.itemId)?.name} - {line.quantity} x {formatCurrency(line.price)} = {formatCurrency(line.total)}</li>
+                        ))}
+                    </ul>
+                    <p>Total: <strong>{formatCurrency(totalAmount)}</strong></p>
+                    {renderSaveForm}
+                    {renderCalculateChange}
+                </div>
             </div>
-            {renderSaveForm}
-            {renderCalculateChange}
         </div>
     );
 };
