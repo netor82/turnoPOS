@@ -99,6 +99,9 @@ const NewOrder: React.FC = () => {
         if (orderId) {
             orderService
                 .print(orderId)
+                .then(() => {
+                    reset();
+                })
                 .catch(e => console.error(e));
         }
     }
@@ -109,6 +112,8 @@ const NewOrder: React.FC = () => {
         setItem(undefined);
         setQuantity(0);
         setOrderId(null);
+        setPaymentType(1);
+        setAmountReceived(0);
     }
 
     const newLineForm =
