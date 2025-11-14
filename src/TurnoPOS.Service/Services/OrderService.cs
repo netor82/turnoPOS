@@ -148,7 +148,7 @@ public class OrderService(IGenericRepository repository,
 
             foreach (var line in group)
             {
-                lines.Add(new() { Type = PrintLineType.Text, Text = $"{line.Quantity} x {line.Item?.Name ?? "N/A"}" });
+                lines.Add(new() { Type = PrintLineType.ItemByDepartment, Text = $"{line.Quantity} x {line.Item?.Name ?? "N/A"}" });
             }
             printer.Print(lines);
         }

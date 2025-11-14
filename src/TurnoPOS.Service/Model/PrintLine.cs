@@ -19,5 +19,7 @@ public enum PrintLineType
 
     TableColumn1,
     TableColumn2,
-    TableColumn3
+    TableColumn3,
+
+    ItemByDepartment
 }

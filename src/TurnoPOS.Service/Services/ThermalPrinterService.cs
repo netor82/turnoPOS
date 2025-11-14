@@ -18,6 +18,7 @@ public class ThermalPrinterService(IOptions<TurnoOptions> options) : IThermalPri
     private static readonly Font headerFont = new("Verdana", 12, FontStyle.Bold);
     private static readonly Font smallerFont = new("Verdana", 8);
     private static readonly Font tableHeaderFont = new("Verdana", 8, FontStyle.Bold);
+    private static readonly Font itemByDepartment = new("Verdana", 16);
     private static readonly Font verticalFont = new("Verdana", 170);
     private static readonly StringFormat formatRight = new() { Alignment = StringAlignment.Far };
     private static readonly StringFormat formatCenter = new() { Alignment = StringAlignment.Center };
@@ -52,6 +53,7 @@ public class ThermalPrinterService(IOptions<TurnoOptions> options) : IThermalPri
         int normalFontHeight = (int)normalFont.GetHeight(e.Graphics);
         int headerFontHeight = (int)headerFont.GetHeight(e.Graphics);
         int tableHeaderFontHeight = (int)tableHeaderFont.GetHeight(e.Graphics);
+        int itemByDepartmentHeight = (int)itemByDepartment.GetHeight(e.Graphics);
         int leftMargin = e.MarginBounds.Left;
         int topMargin = e.MarginBounds.Top;
 
@@ -96,6 +98,11 @@ public class ThermalPrinterService(IOptions<TurnoOptions> options) : IThermalPri
                     font = smallerFont;
                     format = formatCenter;
                     fontHeight = normalFontHeight;
+                    break;
+                case PrintLineType.ItemByDepartment:
+                    font = itemByDepartment;
+                    format = formatDefault;
+                    fontHeight = itemByDepartmentHeight;
                     break;
                 default:
                     font = normalFont;
